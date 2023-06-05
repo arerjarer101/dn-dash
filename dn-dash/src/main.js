@@ -1,22 +1,13 @@
-import { createApp } from 'vue';
-import App from './App.vue';
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
 import PrimeVue from 'primevue/config';
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-import Toast from 'primevue/toast';
-import ToastService from 'primevue/toastservice';
 
-import './assets/app.css';
-import 'primevue/resources/themes/lara-light-indigo/theme.css';
-import 'primevue/resources/primevue.min.css';
-import 'primeicons/primeicons.css';
+import '@/assets/styles.scss';
 
 const app = createApp(App);
-app.use(PrimeVue);
-app.use(ToastService);
 
-app.component('Button', Button);
-app.component('InputText', InputText); 
-app.component('Toast', Toast); 
+app.use(PrimeVue, {ripple: true});
+app.use(router)
 
-app.mount("#app");
+app.mount('#app')
