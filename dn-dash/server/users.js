@@ -1,12 +1,12 @@
 import express from 'express'
-import prisma from '../prisma/prisma.js';
-import { v4 as uuidv4 } from 'uuid';
+import prisma from '../prisma/prisma.js'
+import { v4 as uuidv4 } from 'uuid'
 
 // import dotenv from 'dotenv';
 // dotenv.config();
-// const dev = process.env.NODE_ENV === 'development';
+// const dev = process.env.NODE_ENV === 'development'
 
-const router = express.Router();
+const router = express.Router()
 
 
 // get all users
