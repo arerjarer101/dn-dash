@@ -63,19 +63,21 @@ const isOutsideClicked = (event) => {
 <template>
     <div class="layout-topbar">
         <router-link to="/" class="layout-topbar-logo">
-            <img :src="logoUrl" alt="logo" />
-            <span>SAKAI</span>
+            <div class="logo">
+                <img :src="logoUrl" alt="logo" />
+            </div>
+            <kbd class="pt-1 ml-3">Dn-dash</kbd>
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
             <i class="pi pi-bars"></i>
         </button>
 
-        <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
+        <button class="p-link layout-topbar-menu-button layout-topbar-button mr-6" @click="onTopBarMenuButton()">
             <i class="pi pi-ellipsis-v"></i>
         </button>
 
-        <div class="layout-topbar-menu" :class="topbarMenuClasses">
+        <div class="layout-topbar-menu mr-7" :class="topbarMenuClasses">
             <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
                 <i class="pi pi-calendar"></i>
                 <span>Calendar</span>
@@ -92,4 +94,11 @@ const isOutsideClicked = (event) => {
     </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.logo {
+    filter: drop-shadow(0 0 0.5rem var(--primary-color));
+}
+.logo img{
+    filter: brightness(1.2) grayscale(20%) drop-shadow(0 0 0.7rem var(--primary-color));
+}
+</style>
