@@ -141,6 +141,20 @@ async function onLogout() {
 //   headers.Authorization = `Bearer ${accessToken.value}`
 // })
 
+function onCss() {
+  let str = document.styleSheets[0].href
+  str = str.replace('http://10.100.102.5:7000/themes/', '')
+  let currentTheme = str.replace('/theme.css', '')
+
+  let defaultColor = getComputedStyle(document.querySelector(':root')).getPropertyValue('--text-color')
+  let activeColor = getComputedStyle(document.querySelector(':root')).getPropertyValue('--primary-color')
+  // console.log(document.styleSheets[0].cssRules[0])
+  console.log(currentTheme)
+  console.log(defaultColor)
+  console.log(activeColor)
+  console.log(`'${currentTheme}': {\n\tdefaultColor: '${defaultColor}',\n\tactiveColor: '${activeColor}'\n},`)
+}
+// http://10.100.102.5:7000/themes/bootstrap4-dark-blue/theme.css
 </script>
 
 <template>
@@ -225,6 +239,8 @@ async function onLogout() {
         </p>
     </template>
   </Card>
+
+  <Button label="CSS" class="w-full p-3 mt-5 text-xl" @click="onCss"></Button>
   
   <Button label="Logout" class="w-full p-3 mt-5 text-xl" @click="onLogout"></Button>
   <Button label="Logout Everywhere" class="w-full p-3 mt-5 text-xl" @click="onLogoutAll"></Button>

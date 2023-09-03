@@ -1,6 +1,6 @@
 <script setup>
-import { useRoute, useRouter } from 'vue-router';
-import { ref, provide, inject, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { ref, provide, onUnmounted } from 'vue';
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
 
@@ -23,8 +23,6 @@ console.log('previous path: ', localStorage.previousPath || 'login')
 
 if (!isAuthenticated) router.push('/' + (localStorage.previousPath || 'login'))
 
-// provide('token', token)
-
 async function updateToken() {
   await axios.post(`${apiURL}/token/refresh`, {
     token: localStorage.refreshToken
@@ -46,6 +44,18 @@ async function updateToken() {
   })
   
 }
+
+const colors = ref({
+  defaultColor: getComputedStyle(document.querySelector(':root')).getPropertyValue('--text-color'),
+  activeColor: getComputedStyle(document.querySelector(':root')).getPropertyValue('--primary-color')
+})
+
+function updateColors(defaultColor, activeColor) {
+  colors.value.defaultColor = defaultColor
+  colors.value.activeColor = activeColor
+}
+
+provide('colors', {colors, updateColors})
 
 onUnmounted(() => {
   clearInterval(intervalRefresh)

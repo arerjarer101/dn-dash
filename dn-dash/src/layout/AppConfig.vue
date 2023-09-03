@@ -3,9 +3,12 @@ import RadioButton from 'primevue/radiobutton';
 import Button from 'primevue/button';
 import InputSwitch from 'primevue/inputswitch';
 import Sidebar from 'primevue/sidebar';
+import { getThemeColors } from './composables/colors';
 
-import { ref } from 'vue';
+import { ref, inject, onMounted } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
+
+const {updateColors} = inject('colors')
 
 defineProps({
     simple: {
@@ -34,6 +37,14 @@ const onChangeTheme = (theme, mode) => {
         changeThemeSettings(theme, mode === 'dark');
     });
     linkElement.parentNode.insertBefore(cloneLinkElement, linkElement.nextSibling);
+
+    const newColors = getThemeColors(theme)
+    updateColors(newColors.defaultColor, newColors.activeColor)
+
+    localStorage.mode = mode
+    localStorage.theme = theme
+
+    console.log(localStorage)
 };
 const decrementScale = () => {
     setScale(layoutConfig.scale.value - 1);
@@ -46,6 +57,10 @@ const incrementScale = () => {
 const applyScale = () => {
     document.documentElement.style.fontSize = layoutConfig.scale.value + 'px';
 };
+
+onMounted(()=>{
+    onChangeTheme(localStorage.theme, localStorage.mode)
+})
 </script>
 
 <template>

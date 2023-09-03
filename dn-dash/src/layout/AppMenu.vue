@@ -4,6 +4,13 @@ import { ref } from 'vue';
 import AppMenuItem from './AppMenuItem.vue';
 
 const model = ref([
+{
+        label: 'Games',
+        items: [
+            { label: 'Created', notPrimeIcon: true, id:'bug', icon: 'pi-dna', to: '/created-games' },
+            { label: 'Participated', notPrimeIcon: true, id:'qwe', icon: 'pi-qwe', to: '/home' },
+        ]
+    },
     {
         label: 'Home',
         items: [
@@ -170,6 +177,7 @@ const model = ref([
 
 <template>
     <ul class="layout-menu">
+        
         <template v-for="(item, i) in model" :key="item">
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
             <li v-if="item.separator" class="menu-separator"></li>

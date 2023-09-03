@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ProfileSettings from '../views/ProfileSettings.vue'
+import CreatedGames from '../views/CreatedGames.vue'
 import UiSettings from '../views/UiSettings.vue'
 import AppLayout from '@/layout/AppLayout.vue'
 import axios from 'axios'
@@ -26,6 +27,10 @@ const router = createRouter({
         {
           path: '/ui-settings',
           component: UiSettings
+        },
+        {
+          path: '/created-games',
+          component: CreatedGames
         }
       ]
     },
