@@ -59,7 +59,7 @@ const applyScale = () => {
 };
 
 onMounted(()=>{
-    onChangeTheme(localStorage.theme, localStorage.mode)
+    if (localStorage.theme && localStorage.mode) onChangeTheme(localStorage.theme, localStorage.mode)
 })
 </script>
 
