@@ -44,7 +44,7 @@ async function updateUser() {
     headers: { 'Authorization': `Bearer ${localStorage.accessToken}` } 
   }).then(res => {
     toast.add({
-      severity: 'success', summary: `User ${res.data.user.username} updated`, detail: `Goodbye!`, life: 3000
+      severity: 'success', summary: `User ${res.data.user.username} updated`, detail: `some fields were updated`, life: 3000
     });
     localStorage.user = JSON.stringify(res.data.user)
     console.log(res.message)
@@ -247,9 +247,6 @@ function onCss() {
 </template>
 
 <style>
-.block {
-  
-}
 .token {
   max-width: inherit;
   overflow: scroll;

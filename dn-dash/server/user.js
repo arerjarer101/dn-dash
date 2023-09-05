@@ -1,4 +1,6 @@
 import express from 'express'
+import bcrypt from 'bcrypt'
+
 import prisma from '../prisma/prisma.js';
 import { authenticateToken, generateAccessToken } from './token.js'
 
@@ -13,7 +15,10 @@ router.post('/update', authenticateToken, async (req, res) => {
         username: req.user.username
       }
     });
-    if (newdata.oldpassword !== user.password) throw new Error('Incorrect password')
+
+    const isMatch = await bcrypt.compare(newdata.oldpassword, user.password)
+    if (!isMatch) throw new Error('Incorrect password')
+
     const alreadyExists = await prisma.user.findUnique({
       where: {
         username: newdata.username
@@ -21,6 +26,8 @@ router.post('/update', authenticateToken, async (req, res) => {
     })
     if (alreadyExists && alreadyExists.username !== req.user.username) throw new Error('User already exists')
     
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = newdata.newpassword ? await bcrypt.hash(newdata.newpassword, salt) : user.password
 
     const updatedUser = await prisma.user.update({
       where: {
@@ -28,7 +35,7 @@ router.post('/update', authenticateToken, async (req, res) => {
       },
       data: {
         username: newdata.username,
-        password: newdata.newpassword ? newdata.newpassword : newdata.oldpassword,
+        password: hashedPassword,
         email: newdata.email
       }
     })

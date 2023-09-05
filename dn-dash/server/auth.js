@@ -1,8 +1,9 @@
 import express from 'express'
 import prisma from '../prisma/prisma.js';
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
 import { v4 as uuidv4 } from 'uuid';
-import { authenticateToken, generateAccessToken } from './token.js'
+import { generateAccessToken } from './token.js'
 
 const router = express.Router();
 
@@ -15,9 +16,12 @@ router.post('/login', async (req, res) => {
       }
     });
     if (!user) throw new Error('User doesn\'t exist')
-    if (req.body.password !== user.password) throw new Error('Incorrect username or password')
 
-    console.log('user logged in ', user)
+    const isMatch = await bcrypt.compare(req.body.password, user.password)
+
+    if (!isMatch) throw new Error('Incorrect username or password')
+
+    console.log('user logged in ', user.username)
     const accessToken = generateAccessToken(user)
     const refreshToken = jwt.sign({user, createdAt: Date.now()}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
     const userId = user.userId
@@ -58,12 +62,15 @@ router.post('/register', async (req, res) => {
     if (alreadyExists) throw new Error('User already exists')
 
     const id = uuidv4()
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
+
     const newUser = await prisma.user.create({
       data: {
         userId: id,
         email,
         username,
-        password,
+        password: hashedPassword
       },
     });
 

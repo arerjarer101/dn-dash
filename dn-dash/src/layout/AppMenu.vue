@@ -8,7 +8,7 @@ const model = ref([
         label: 'Games',
         items: [
             { label: 'Created', notPrimeIcon: true, id:'bug', icon: 'pi-dna', to: '/created-games' },
-            { label: 'Participated', notPrimeIcon: true, id:'qwe', icon: 'pi-qwe', to: '/home' },
+            { label: 'Participated', notPrimeIcon: true, id:'qwe', icon: 'pi-qwe', to: '/participated-games' },
         ]
     },
     {
