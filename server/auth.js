@@ -1,8 +1,9 @@
 import express from 'express'
-import prisma from '../prisma/prisma.js';
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { v4 as uuidv4 } from 'uuid';
+
+import prisma from '../prisma/prisma.js';
 import { generateAccessToken } from './token.js'
 
 const router = express.Router();

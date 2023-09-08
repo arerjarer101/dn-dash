@@ -2,7 +2,7 @@ import express from 'express'
 import bcrypt from 'bcrypt'
 
 import prisma from '../prisma/prisma.js';
-import { authenticateToken, generateAccessToken } from './token.js'
+import { authenticateToken } from './token.js'
 
 const router = express.Router();
 
@@ -40,6 +40,7 @@ router.post('/update', authenticateToken, async (req, res) => {
       }
     })
 
+    //  TODO: send back info which fields were updated
     const oldUserFields = Object.keys(user)
     const updatedUserFields = Object.keys(updatedUser)
 
