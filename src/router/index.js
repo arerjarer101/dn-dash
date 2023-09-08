@@ -81,8 +81,11 @@ router.beforeEach(async (to, from) => {
     console.log('user is not logged in, pushed out!!!')
   }
   
-  await axios.post(`${apiURL}/token/refresh`, {
-    token: localStorage.refreshToken
+  await axios({
+    method: 'post',
+    url: `${apiURL}/token/refresh`,
+    data: { token: localStorage.refreshToken },
+    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` } 
   }).then((res) => {
     localStorage.accessToken = res.data.accessToken
   }).catch((error) => {

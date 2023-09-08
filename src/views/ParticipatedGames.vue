@@ -11,7 +11,6 @@ const apiURL = 'http://10.100.102.5:7070'
 const user = ref('')
 
 user.value = localStorage.user && JSON.parse(localStorage.user) 
-console.log(localStorage.user)
 
 const headers = reactive({ 'Authorization': 'Bearer ' + localStorage.accessToken })
 

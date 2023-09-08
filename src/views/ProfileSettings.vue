@@ -14,16 +14,24 @@ const user = ref('')
 const accessToken = ref(localStorage.accessToken)
 
 user.value = localStorage.user && JSON.parse(localStorage.user) 
-console.log(localStorage.user)
 
 const headers = reactive({ 'Authorization': 'Bearer ' + localStorage.accessToken })
 
 onMounted(() => {
-  console.log(route.query.action)
   if (route.query.action === "login") {
     setTimeout(() => {
       toast.add({
         severity: 'success', summary: 'Logged in', detail: `Welcome back, ${user.value.username}!`, life: 3000
+      });
+    }, 100)
+
+    route.query.action = ''
+  }
+
+  if (route.query.action === "register") {
+    setTimeout(() => {
+      toast.add({
+        severity: 'success', summary: 'User registered', detail: `Welcome aboard, ${user.value.username}!`, life: 3000
       });
     }, 100)
 
@@ -57,8 +65,11 @@ async function updateUser() {
 }
 
 async function updateToken() {
-  await axios.post(`${apiURL}/token/refresh`, {
-    token: localStorage.refreshToken
+  await axios({
+    method: 'post',
+    url: `${apiURL}/token/refresh`,
+    data: { token: localStorage.refreshToken },
+    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` } 
   }).then((res) => {
     localStorage.accessToken = res.data.accessToken
     accessToken.value = res.data.accessToken
@@ -90,8 +101,8 @@ async function onLogoutAll() {
         action: "logoutAll",
       }
     })
-  }).catch(res => {
-    console.log(res)
+  }).catch(error => {
+    console.log(error)
 
     localStorage.user = ""
     localStorage.accessToken = ""
@@ -143,13 +154,8 @@ function onCss() {
   let str = document.styleSheets[0].href
   str = str.replace('http://10.100.102.5:7000/themes/', '')
   let currentTheme = str.replace('/theme.css', '')
-
   let defaultColor = getComputedStyle(document.querySelector(':root')).getPropertyValue('--text-color')
   let activeColor = getComputedStyle(document.querySelector(':root')).getPropertyValue('--primary-color')
-  // console.log(document.styleSheets[0].cssRules[0])
-  console.log(currentTheme)
-  console.log(defaultColor)
-  console.log(activeColor)
   console.log(`'${currentTheme}': {\n\tdefaultColor: '${defaultColor}',\n\tactiveColor: '${activeColor}'\n},`)
 }
 // http://10.100.102.5:7000/themes/bootstrap4-dark-blue/theme.css

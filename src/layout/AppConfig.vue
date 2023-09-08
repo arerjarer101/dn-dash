@@ -44,7 +44,7 @@ const onChangeTheme = (theme, mode) => {
 	localStorage.mode = mode
 	localStorage.theme = theme
 
-	console.log(localStorage)
+	console.log('theme changed to ', localStorage.theme, localStorage.mode)
 };
 const decrementScale = () => {
 	setScale(layoutConfig.scale.value - 1);

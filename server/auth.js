@@ -28,22 +28,17 @@ router.post('/login', async (req, res) => {
     const userId = user.userId
 
     await prisma.RefreshTokens.create({ data: { token: refreshToken, userId: userId } }).then(
-
+      res.json({ 
+        accessToken: accessToken, 
+        refreshToken: refreshToken, 
+        user: {
+          email: user.email,
+          username: user.username,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt
+        }
+      })
     )
-    delete user.userId
-    delete user.password
-    delete user.id
-
-    console.log(user)
-    console.log(user.password)
-
-    res.json({ accessToken: accessToken, refreshToken: refreshToken, user: {
-        email: user.email,
-        username: user.username,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt
-      }
-    })
   } catch (error) {
     console.log(error)
     res.status(500).json({ error: error.message });

@@ -33,7 +33,6 @@ async function onRegister() {
 		email: email.value,
 		password: password.value
 	}).then(res => {
-		console.log(res)
 		if (res.data.accessToken && res.data.refreshToken) {
 			localStorage.accessToken = res.data.accessToken
 			localStorage.refreshToken = res.data.refreshToken
@@ -42,7 +41,7 @@ async function onRegister() {
 			router.push({
 				path: '/',
 				query: {
-					action: 'login',
+					action: 'register',
 				}
 			})
 		}
