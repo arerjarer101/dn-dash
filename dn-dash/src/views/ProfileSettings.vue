@@ -3,8 +3,6 @@ import {ref, onMounted, watch, reactive, inject} from 'vue'
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
-import Toast from 'primevue/toast';
-import Password from 'primevue/password';
 
 const toast = useToast();
 const router  = useRouter()
@@ -175,7 +173,7 @@ function onCss() {
             <span class="p-inputgroup-addon">
               <i class="pi pi-lock"></i>
             </span>
-            <Password placeholder="Old password" v-model="user.oldpassword"/>
+            <Password placeholder="Old password" v-model="user.oldpassword" :feedback="false"/>
         </div>
 
         <div class="p-inputgroup flex-1">

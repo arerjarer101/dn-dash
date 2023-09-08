@@ -61,11 +61,12 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
   if (to.meta.freeAccess === true) return true
 
+  const apiURL = 'http://10.100.102.5:7070'
   const userStatus = {}
 
   await axios({
     method: 'get',
-    url: `http://10.100.102.5:7070/token/loggedIn`,
+    url: `${apiURL}/token/loggedIn`,
     params: { refreshToken: localStorage.refreshToken },
     headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
   }).then(res => {
@@ -79,6 +80,14 @@ router.beforeEach(async (to, from) => {
     router.push('/login')
     console.log('user is not logged in, pushed out!!!')
   }
+  
+  await axios.post(`${apiURL}/token/refresh`, {
+    token: localStorage.refreshToken
+  }).then((res) => {
+    localStorage.accessToken = res.data.accessToken
+  }).catch((error) => {
+    console.log(error)
+  })
 })
 
 

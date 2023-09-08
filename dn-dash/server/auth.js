@@ -76,7 +76,7 @@ router.post('/register', async (req, res) => {
 
     console.log('user created ', newUser)
     const accessToken = generateAccessToken(newUser)
-    const refreshToken = jwt.sign({newUser,createdAt: Date.now()}, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '7d'})
+    const refreshToken = jwt.sign({user: newUser,createdAt: Date.now()}, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '7d'})
     const userId = newUser.userId
 
     await prisma.RefreshTokens.create({ data: { token: refreshToken, userId: userId } })

@@ -1,14 +1,10 @@
 <script setup>
 import { useLayout } from '../layout/composables/layout.js';
-import { changeTheme } from '../layout/composables/config.js';
-import { getThemeColors } from '../layout/composables/colors.js';
 import { ref, computed, onMounted, inject } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
-
-const {updateColors} = inject('colors')
 
 const toast = useToast();
 
@@ -105,15 +101,6 @@ function onMousemove($event) {
 const logoUrl = computed(() => {
 	return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
-
-onMounted(() => {
-	if (localStorage.theme) {
-		changeTheme(localStorage.theme)
-		const newColors = getThemeColors(localStorage.theme)
-  	updateColors(newColors.defaultColor, newColors.activeColor)
-	}
-	
-})
 
 </script>
 

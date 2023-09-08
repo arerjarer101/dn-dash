@@ -1,8 +1,11 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import { ref, provide, onUnmounted } from 'vue';
+import { ref, provide, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
+
+import { changeTheme } from '../src/layout/composables/config.js';
+import { getThemeColors } from '../src/layout/composables/colors.js';
 
 const router = useRouter()
 const toast = useToast();
@@ -56,6 +59,14 @@ function updateColors(defaultColor, activeColor) {
 }
 
 provide('colors', {colors, updateColors})
+
+onMounted(() => {
+	if (localStorage.theme) {
+		changeTheme(localStorage.theme)
+		const newColors = getThemeColors(localStorage.theme)
+  	updateColors(newColors.defaultColor, newColors.activeColor)
+	}
+})
 
 onUnmounted(() => {
   clearInterval(intervalRefresh)
