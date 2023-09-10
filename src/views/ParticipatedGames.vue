@@ -46,8 +46,7 @@ async function updateUser() {
 </script>
 
 <template>
-  <Toast></Toast>
-
+  <Card></Card>
 
 </template>
 

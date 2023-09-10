@@ -14,7 +14,7 @@ function authenticateToken(req, res, next) {
     if (err) return res.sendStatus(403)
     req.user = decoded.user
     req.decoded = decoded
-    console.log('authenticateToken() -> user authenticated', decoded)
+    // console.log('authenticateToken() -> user authenticated', decoded.user)
     next()
   })
 }
@@ -37,7 +37,7 @@ router.post('/refresh', authenticateToken, async (req, res) => {
 
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
     if (err) return res.sendStatus(403)
-    console.log('refresh token decoded', decoded)
+    // console.log('refresh token decoded', decoded)
     const accessToken = generateAccessToken(decoded.user)
     res.json({ accessToken: accessToken })
   })

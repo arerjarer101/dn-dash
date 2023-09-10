@@ -92,6 +92,15 @@ router.delete('/logoutAll', authenticateToken, async (req, res) => {
   }
 })
 
+// router.get('/user', authenticateToken, (req, res) => {
+
+//   const user = req.user
+
+//   console.log('get user', user)
+
+//   res.json(user)
+// })
+
 router.get('/userId', authenticateToken, (req, res) => {
 
   console.log('req.user.userId', req.user.userId)

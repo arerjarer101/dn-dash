@@ -1,5 +1,5 @@
 <script setup>
-import {ref, onMounted, watch, reactive, inject} from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
@@ -161,9 +161,7 @@ function onCss() {
 // http://10.100.102.5:7000/themes/bootstrap4-dark-blue/theme.css
 </script>
 
-<template>
-  <Toast></Toast>
-  
+<template> 
   <Card class="mb-3">
     <template #title>User settings</template>
     <template #content>
