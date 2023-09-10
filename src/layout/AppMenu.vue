@@ -14,7 +14,7 @@ const model = ref([
 	{
 		label: 'Home',
 		items: [
-			{ label: 'Home', icon: 'pi pi-home', to: '/' },
+			{ label: 'Profile', icon: 'pi pi-user', to: '/profile' },
 			{ label: 'Initial View', icon: 'pi pi-eye', to: '/home' },
 			{ label: 'Ui Settings', icon: 'pi pi-cog', to: '/ui-settings' },
 		]

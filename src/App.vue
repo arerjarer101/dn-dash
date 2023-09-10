@@ -22,13 +22,14 @@ const intervalRefresh = setInterval(() => {
   }
 }, 10000) 
 
-console.log('previous path: ', localStorage.previousPath || 'login')
-
 if (!isAuthenticated) router.push('/' + (localStorage.previousPath || 'login'))
 
 async function updateToken() {
-  await axios.post(`${apiURL}/token/refresh`, {
-    token: localStorage.refreshToken
+  await axios({
+    method: 'post',
+    url: `${apiURL}/token/refresh`,
+    data: { token: localStorage.refreshToken },
+    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` } 
   }).then((res) => {
     localStorage.accessToken = res.data.accessToken
     // token.value = res.data.accessToken

@@ -41,18 +41,13 @@ router.post('/update', authenticateToken, async (req, res) => {
     })
 
     //  TODO: send back info which fields were updated
-    const oldUserFields = Object.keys(user)
-    const updatedUserFields = Object.keys(updatedUser)
-
-    console.log(oldUserFields)
-    console.log(updatedUserFields)
-
-    Object.keys(newdata)
+    // const oldUserFields = Object.keys(user)
+    // const updatedUserFields = Object.keys(updatedUser)
+    // console.log(oldUserFields)
+    // console.log(updatedUserFields)
 
     console.log('user updated ', updatedUser)
-    delete updatedUser.userId
-    delete updatedUser.password
-    delete updatedUser.id
+
     res.json({ user: {
         email: updatedUser.email,
         username: updatedUser.username,
@@ -67,12 +62,12 @@ router.post('/update', authenticateToken, async (req, res) => {
 
 router.delete('/logout', authenticateToken, async (req, res) => {
   try {
-    console.log(req.body)
     const deleteToken = await prisma.RefreshTokens.delete({
       where: {
         token: req.body.token
       }
     })
+    console.log('user logged out', deleteToken)
     res.json(deleteToken)
     // res.sendStatus(204)
   } catch (error) {
@@ -88,6 +83,7 @@ router.delete('/logoutAll', authenticateToken, async (req, res) => {
         userId: req.user.userId
       }
     })
+    console.log('user terminated all sessions', deleteToken)
     res.json(deleteToken)
     // res.sendStatus(204)
   } catch (error) {
@@ -95,6 +91,15 @@ router.delete('/logoutAll', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 })
+
+// router.get('/user', authenticateToken, (req, res) => {
+
+//   const user = req.user
+
+//   console.log('get user', user)
+
+//   res.json(user)
+// })
 
 router.get('/userId', authenticateToken, (req, res) => {
 

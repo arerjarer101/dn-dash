@@ -1,53 +1,106 @@
 <script setup>
-import { ref, onMounted, reactive } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
-import Toast from 'primevue/toast';
-import Password from 'primevue/password';
 
 const toast = useToast();
 const apiURL = 'http://10.100.102.5:7070'
-const user = ref('')
+const router = useRouter()
 
-user.value = localStorage.user && JSON.parse(localStorage.user) 
-console.log(localStorage.user)
+const games = ref('')
 
-const headers = reactive({ 'Authorization': 'Bearer ' + localStorage.accessToken })
+async function getCreatedGames() {
+  await axios({
+    method: 'get',
+    url: `${apiURL}/game/created`,
+    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
+  }).then(res => {
+    games.value = res.data.userGames
+  }).catch(error => {
+    console.log(error.message)
+  })
+}
 
-onMounted(() => {
-
-})
-
-async function updateUser() {
-  const newdata = user.value
-  // newdata.newpassword = newdata.newpassword || newdata.oldpassword
-  console.log('HEADERS:',headers)
+async function createGame() {
+  const game = {
+    name: 'test',
+  }
   await axios({
     method: 'post',
-    url: `${apiURL}/user/update`, 
-    data: { newdata }, 
+    url: `${apiURL}/game/create`, 
+    data: { game }, 
     headers: { 'Authorization': `Bearer ${localStorage.accessToken}` } 
   }).then(res => {
     toast.add({
-      severity: 'success', summary: `User ${res.data.user.username} updated`, detail: `Goodbye!`, life: 3000
+      severity: 'success', summary: `Game created!`, detail: ``, life: 3000
     });
-    localStorage.user = JSON.stringify(res.data.user)
-    console.log(res.message)
-    newdata.newpassword = ''
-    newdata.oldpassword = ''
+    console.log(res.data)
+    getCreatedGames()
   }).catch(error => {
     console.log(error.message)
     toast.add({
-			severity: 'error', summary: 'An error occured when updating user data', detail: error.response.data.error, life: 10000
+			severity: 'error', summary: 'An error occured when creating a game', detail: error.response.data.error, life: 10000
 		});
   })
 }
 
+async function deleteGame(id) {
+  const game = {
+    id: id
+  }
+  await axios({
+    method: 'post',
+    url: `${apiURL}/game/delete`, 
+    data: { game }, 
+    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` } 
+  }).then(res => {
+    toast.add({
+      severity: 'success', summary: `Game deleted!`, detail: ``, life: 3000
+    });
+    console.log(res.data)
+    getCreatedGames()
+
+  }).catch(error => {
+    console.log(error.message)
+    toast.add({
+			severity: 'error', summary: 'An error occured when deleting the game', detail: error.response.data.error, life: 10000
+		});
+  })
+}
+
+function openGame(game) {
+  console.log(router.getRoutes())
+  localStorage.currentGame = JSON.stringify(game)
+  router.push({ path: `/created-games/${game.id}` })
+}
+
+onBeforeMount(() => {
+  getCreatedGames()
+})
+
 </script>
 
 <template>
-  <Toast></Toast>
+  
+  <Card>
+    <template #title>Create a game</template>
+    <template #content>
+      <Button @click="createGame" class="mr-2">Create</Button>
+      <Button @click="getCreatedGames">getCreatedGames</Button>
+    </template>
+  </Card>
+
+  <Card v-for="game in games" :key="game" class="mt-2">
+    <template #title>{{game.name}}</template>
+    <template #content >
+      <div class="mb-5">{{game}}</div>
+      <div>
+        <Button @click="openGame(game)" class="mr-2">Open</Button>
+        <Button @click="deleteGame(game.id)" class="mr-2">Delete</Button>
+      </div>
+    </template>
+  </Card>
 
 
 </template>

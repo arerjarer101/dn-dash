@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ProfileSettings from '../views/ProfileSettings.vue'
 import CreatedGames from '../views/CreatedGames.vue'
+import GamePage from '../views/GamePage.vue'
 import ParticipatedGames from '../views/ParticipatedGames.vue'
 import UiSettings from '../views/UiSettings.vue'
 import AppLayout from '@/layout/AppLayout.vue'
@@ -17,7 +18,7 @@ const router = createRouter({
       component: AppLayout,
       children: [
         {
-          path: '/',
+          path: '/profile',
           name: 'profile',
           component: ProfileSettings
         },
@@ -31,7 +32,12 @@ const router = createRouter({
         },
         {
           path: '/created-games',
-          component: CreatedGames
+          name: 'created-games',
+          component: CreatedGames,
+        },
+        {
+          path: '/created-games/:gameId',
+          component: GamePage
         },
         {
           path: '/participated-games',
@@ -81,8 +87,11 @@ router.beforeEach(async (to, from) => {
     console.log('user is not logged in, pushed out!!!')
   }
   
-  await axios.post(`${apiURL}/token/refresh`, {
-    token: localStorage.refreshToken
+  await axios({
+    method: 'post',
+    url: `${apiURL}/token/refresh`,
+    data: { token: localStorage.refreshToken },
+    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` } 
   }).then((res) => {
     localStorage.accessToken = res.data.accessToken
   }).catch((error) => {

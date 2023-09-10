@@ -12,10 +12,9 @@ function authenticateToken(req, res, next) {
   
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) return res.sendStatus(403)
-    console.log('access token decoded ', decoded)
     req.user = decoded.user
     req.decoded = decoded
-    console.log('req.user', req.user)
+    // console.log('authenticateToken() -> user authenticated', decoded.user)
     next()
   })
 }
@@ -24,7 +23,7 @@ function generateAccessToken(user) {
   return jwt.sign({user}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: tokenLifespan })
 }
 
-router.post('/refresh', async (req, res) => {
+router.post('/refresh', authenticateToken, async (req, res) => {
   const refreshToken = req.body.token
   if (refreshToken == null) return res.sendStatus(401)
 
@@ -38,33 +37,21 @@ router.post('/refresh', async (req, res) => {
 
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
     if (err) return res.sendStatus(403)
-    console.log('refresh token decoded', decoded)
+    // console.log('refresh token decoded', decoded)
     const accessToken = generateAccessToken(decoded.user)
     res.json({ accessToken: accessToken })
   })
 })
 
-router.get('/decoded', authenticateToken, (req, res) => {
-
-  console.log('req.decoded', req.decoded)
-
-  const decoded = req.decoded
-
-  res.json(decoded)
-})
-
 router.get('/loggedIn', authenticateToken, async (req, res) => {
   try {
-    const existingToken = await prisma.RefreshTokens.findUnique({
+    const session = await prisma.RefreshTokens.findUnique({
       where: {
         token: req.query.refreshToken
       }
     })
-    console.log('existingToken', existingToken)
-
-    const loggedInStatus = req.user.userId === existingToken.userId ? true : false
-    console.log(loggedInStatus)
-
+    const loggedInStatus = req.user.userId === session.userId ? true : false
+    console.log('user logged in state', loggedInStatus)
     res.json(loggedInStatus)
   } catch (error) {
     console.log(error)
