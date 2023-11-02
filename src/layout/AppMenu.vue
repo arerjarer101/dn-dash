@@ -7,16 +7,16 @@ const model = ref([
 	{
 		label: 'Games',
 		items: [
-			{ label: 'Created', notPrimeIcon: true, id: 'bug', icon: 'pi-dna', to: '/created-games' },
-			{ label: 'Participated', notPrimeIcon: true, id: 'qwe', icon: 'pi-qwe', to: '/participated-games' },
+			{ label: 'Created', notPrimeIcon: true, id: 'bug', icon: 'pi-dna', to: 'created-games' },
+			{ label: 'Participated', notPrimeIcon: true, id: 'qwe', icon: 'pi-qwe', to: 'participated-games' },
 		]
 	},
 	{
 		label: 'Home',
 		items: [
-			{ label: 'Profile', icon: 'pi pi-user', to: '/profile' },
-			{ label: 'Initial View', icon: 'pi pi-eye', to: '/home' },
-			{ label: 'Ui Settings', icon: 'pi pi-cog', to: '/ui-settings' },
+			{ label: 'Profile', icon: 'pi pi-user', to: 'profile' },
+			{ label: 'Initial View', icon: 'pi pi-eye', to: 'home' },
+			{ label: 'Ui Settings', icon: 'pi pi-cog', to: 'ui-settings' },
 		]
 	},
 ]);

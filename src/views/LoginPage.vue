@@ -1,28 +1,22 @@
 <script setup>
 import { useLayout } from '../layout/composables/layout.js';
-import { ref, computed, onMounted, inject } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 
 const toast = useToast();
-
 const router = useRouter()
 const route = useRoute()
 
 localStorage.previousPath = 'login'
 
 const backgroundImg = ref(getRandomImg())
-
 const { layoutConfig } = useLayout();
-// console.log(layoutConfig())
-
 const username = ref('');
-
 const password = ref('');
-const apiURL = 'http://10.100.102.5:7070'
-// console.log(process.env)
+const apiURL = import.meta.env.VITE_API_URL
 
 onMounted(() => {
 	username.value = route.query.username

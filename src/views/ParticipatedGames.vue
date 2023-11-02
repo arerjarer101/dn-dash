@@ -1,13 +1,9 @@
 <script setup>
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, reactive, inject } from 'vue'
 import axios from 'axios';
-import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
-import Toast from 'primevue/toast';
-import Password from 'primevue/password';
 
-const toast = useToast();
-const apiURL = 'http://10.100.102.5:7070'
+const toast = inject('toast')
+const apiURL = import.meta.env.VITE_API_URL
 const user = ref('')
 
 user.value = localStorage.user && JSON.parse(localStorage.user) 

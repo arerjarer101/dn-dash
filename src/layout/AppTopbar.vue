@@ -1,10 +1,11 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
+import { useRouter } from 'vue-router';
 // import { useRouter } from 'vue-router';
 
 const { layoutConfig, onMenuToggle } = useLayout();
-
+const router = useRouter()
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 // const router = useRouter();
@@ -18,7 +19,7 @@ onBeforeUnmount(() => {
 });
 
 const logoUrl = computed(() => {
-	return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
+	return `../../public/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
 
 // const onTopBarMenuButton = () => {
@@ -33,6 +34,10 @@ const logoUrl = computed(() => {
 // 		'layout-topbar-menu-mobile-active': topbarMenuActive.value
 // 	};
 // });
+
+const routeBack = () => {
+	router.back()
+}
 
 const bindOutsideClickListener = () => {
 	if (!outsideClickListener.value) {
@@ -62,11 +67,12 @@ const isOutsideClicked = (event) => {
 
 <template>
 	<div class="layout-topbar">
-		<router-link to="/" class="layout-topbar-logo ">
+		<Button class="" @click="routeBack" >Back</Button>
+		<!-- <router-link to="/" class="layout-topbar-logo ">
 			<div class="logo">
 				<img :src="logoUrl" alt="logo" />
 			</div>
-		</router-link>
+		</router-link> -->
 
 		<button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
 			<i class="pi pi-bars"></i>

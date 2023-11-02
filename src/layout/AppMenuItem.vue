@@ -67,7 +67,8 @@ const itemClick = (event, item) => {
 };
 
 const checkActiveRoute = (item) => {
-	return route.path === item.to;
+	console.log()
+	return route.path.split('/').includes(item.to);
 };
 </script>
 
@@ -83,7 +84,7 @@ const checkActiveRoute = (item) => {
 		</a>
 
 		<router-link v-if="item.to && !item.items && item.visible !== false" @click="itemClick($event, item, index)"
-			:class="[item.class, { 'active-route': checkActiveRoute(item) }]" tabindex="0" :to="item.to">
+			:class="[item.class, { 'active-route': checkActiveRoute(item) }]" tabindex="0" :to="`/${item.to}`">
 
 			<span v-if="item.notPrimeIcon"
 				:innerHTML="svgs[item.id](checkActiveRoute(item) ? colors.activeColor : colors.defaultColor)" :class="item.icon"
