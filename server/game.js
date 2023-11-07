@@ -38,7 +38,7 @@ router.get('/by/:id', authenticateToken, async (req, res) => {
         characters: true
       }
     })
-
+    updatedGame.gameData = JSON.parse(updatedGame.gameData)
     res.json({ updatedGame })
   } catch (error) {
     console.log(error)

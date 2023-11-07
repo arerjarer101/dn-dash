@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
-// const props = defineProps(['currentGame'])
+const props = defineProps(['currentGame'])
 // const toast = inject('toast')
 const apiURL = import.meta.env.VITE_API_URL
 const players = ref([])
@@ -28,7 +28,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <DataTable :value="players" tableStyle="min-width: 10rem">
+  <DataTable :value="props.currentGame.players" tableStyle="min-width: 10rem">
       <Column field="username" header="Players"></Column>
   </DataTable>
 </template>

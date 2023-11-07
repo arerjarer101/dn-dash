@@ -11,7 +11,7 @@ const toast = inject('toast')
 const apiURL = import.meta.env.VITE_API_URL
 const currentGame = ref(JSON.parse(localStorage.currentGame))
 const newGameData = ref(JSON.parse(localStorage.currentGame).gameData)
-console.log('setup currentGame', currentGame)
+console.log('setup currentGame', currentGame.value)
 const newCharacter = reactive({})
 
 console.log('import.meta.env', import.meta.env.VITE_API_URL)
@@ -88,6 +88,11 @@ async function onCharacterDeleted(name) {
   await getUpdatedGame(currentGame.value.id)
 }
 
+async function onCharacterUpdated(name) {
+  console.log('updated character ',name)
+  await getUpdatedGame(currentGame.value.id)
+}
+
 async function onPlayersUpdated(updatedGame) {
   console.log('emitted updatedGame', updatedGame)
   currentGame.value = JSON.parse(localStorage.currentGame)
@@ -100,7 +105,11 @@ async function onPlayersUpdated(updatedGame) {
     <TabPanel header="Characters">
 			<TabView :scrollable="true">
         <TabPanel :header="character.name" v-for="(character, charId) of charList" :key="charId">
-          <CharacterPage :character="character" @delete-character="(name) => onCharacterDeleted(name)"></CharacterPage>
+          <CharacterPage 
+          :character="character" 
+          :charData="JSON.parse(character.charData)" 
+          @delete-character="(name) => onCharacterDeleted(name)"
+          @update-character="(name) => onCharacterUpdated(name)"></CharacterPage>
         </TabPanel>
         <!-- <TabPanel header="+old+">
           <Card class="mb-3">

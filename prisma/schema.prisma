@@ -38,6 +38,7 @@ model Character {
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
   games     Game[]   
+  charData  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

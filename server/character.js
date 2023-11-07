@@ -7,19 +7,47 @@ const router = express.Router();
 
 router.post('/create', authenticateToken, async (req, res) => {
   try {
-    console.log(req.body.character)
+    const character = req.body.character
+    console.log('CREATING CHARACTER ', character)
+    character.charData = JSON.stringify(character.charData)
+
     const createdCharacter = await prisma.character.create({
       data: {
-        name: req.body.character.name,
+        name: character.name,
+        charData: character.charData,
         user: {
           connect: {
-            id: req.body.character.playerId
+            id: character.playerId
           },
         },
       },
     })
 
+    createdCharacter.charData = JSON.parse(createdCharacter.charData)
     res.json({ createdCharacter })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: error.message });
+  }
+})
+
+router.post('/update', authenticateToken, async (req, res) => {
+  try {
+    const character = req.body.character
+    character.charData = JSON.stringify(character.charData)
+
+    const updatedCharacter = await prisma.character.update({
+      where: {
+        id: req.body.character.id
+      },
+      data: {
+        name: character.name,
+        charData: character.charData
+      }
+    })
+
+    updatedCharacter.charData = JSON.parse(updatedCharacter.charData)
+    res.json({ updatedCharacter })
   } catch (error) {
     console.log(error)
     res.status(500).json({ error: error.message });
@@ -53,28 +81,7 @@ router.post('/create', authenticateToken, async (req, res) => {
 //   }
 // })
 
-// router.post('/update/gameData', authenticateToken, async (req, res) => {
-//   try {
-//     const updatedGame = await prisma.game.update({
-//       where: {
-//         id: req.body.game.id
-//       },
-//       data: {
-//         gameData: JSON.stringify(req.body.game.gameData)
-//       },
-//       include: {
-//         players: true
-//       }
-//     })
 
-//     updatedGame.gameData = JSON.parse(updatedGame.gameData)
-
-//     res.json({ updatedGame })
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({ error: error.message });
-//   }
-// })
 
 // router.post('/update/players', authenticateToken, async (req, res) => {
 //   console.log(req.body.game)

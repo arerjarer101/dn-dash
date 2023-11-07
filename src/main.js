@@ -17,10 +17,17 @@ import TabPanel from 'primevue/tabpanel';
 import MultiSelect from 'primevue/multiselect';
 // import ConfirmPopup from 'primevue/confirmpopup';
 import ConfirmDialog from 'primevue/confirmdialog';
+import Dialog from 'primevue/dialog';
 import ConfirmationService from 'primevue/confirmationservice';
 import DataTable from 'primevue/datatable';
 import Dropdown from 'primevue/dropdown';
 import Column from 'primevue/column'
+import ColorPicker from 'primevue/colorpicker';
+import Fieldset from 'primevue/fieldset';
+import Splitter from 'primevue/splitter';
+import SplitterPanel from 'primevue/splitterpanel';
+import Textarea from 'primevue/textarea';
+import Toolbar from 'primevue/toolbar';
 
 import '@/assets/styles.scss';
 
@@ -44,10 +51,16 @@ app.component('TabView', TabView);
 app.component('TabPanel', TabPanel);
 app.component('MultiSelect', MultiSelect);
 // app.component('ConfirmPopup', ConfirmPopup);
+app.component('Dialog', Dialog);
 app.component('ConfirmDialog', ConfirmDialog);
 app.component('DataTable', DataTable);
 app.component('Column', Column);
 app.component('Dropdown', Dropdown);
-
+app.component('ColorPicker', ColorPicker);
+app.component('Fieldset', Fieldset);
+app.component('Splitter', Splitter);
+app.component('SplitterPanel', SplitterPanel);
+app.component('Textarea', Textarea);
+app.component('Toolbar', Toolbar);
 
 app.mount('#app')
