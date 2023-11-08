@@ -76,4 +76,12 @@ const isOutsideClicked = (event) => {
 	</div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.layout-main-container {
+	padding: 4rem 2rem 2rem 2rem;
+}
+.layout-sidebar {
+	top: 4rem;
+  left: 1rem;
+}
+</style>

@@ -8,6 +8,7 @@ const apiURL = import.meta.env.VITE_API_URL
 
 localStorage.currentGame = ''
 
+const users = ref()
 const confirm = useConfirm();
 
 const games = ref('')
@@ -38,6 +39,20 @@ const confirmDeleteGame = (game) => {
 //   }, 
 //   {deep: true}
 // )
+
+async function getUsers() {
+  await axios({
+    method: 'get',
+    url: `${apiURL}/user/list`,
+    params: { refreshToken: localStorage.refreshToken },
+    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
+  }).then(res => {
+    users.value = res.data
+    console.log('GOT USERS', users.value)
+  }).catch((error) => {
+    console.log(error)
+  })
+}
 
 async function getCreatedGames() {
   await axios({
@@ -105,6 +120,7 @@ function open(game) {
 
 onBeforeMount(() => {
   getCreatedGames()
+  getUsers()
 })
 </script>
 

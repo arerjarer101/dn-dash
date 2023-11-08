@@ -3,10 +3,10 @@ import { useLayout } from '@/layout/composables/layout';
 import { computed } from 'vue';
 
 const { layoutConfig } = useLayout();
-console.log('layoutConfig', layoutConfig)
+console.log('layoutConfig', layoutConfig.darkTheme.value)
 
 const logoUrl = computed(() => {
-	return `../../public/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
+	return `/layout/images/logo.svg`;
 });
 </script>
 

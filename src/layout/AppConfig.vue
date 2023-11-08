@@ -64,7 +64,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<button class="layout-config-button p-link" type="button" @click="onConfigButtonClick()">
+	<button class="layout-config-button p-link " type="button" @click="onConfigButtonClick()">
 		<i class="pi pi-cog"></i>
 	</button>
 
@@ -321,4 +321,15 @@ onMounted(() => {
 	</div>
 </Sidebar></template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.layout-config-button {
+	width: 2rem;
+  height: 2rem;
+  line-height: 2rem;
+	font-size: 1.5rem;
+	top: 2rem;
+}
+.pi-cog{
+	font-size: 1.5rem;
+}
+</style>

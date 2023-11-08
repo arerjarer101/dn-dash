@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { computed, inject, reactive, ref, toRaw } from 'vue';
+import { computed, inject, onBeforeMount, reactive, ref, toRaw } from 'vue';
 import CharacterPage from './CharacterPage.vue';
 import AddCharacter from './AddCharacter.vue';
 import AddPlayer from './AddPlayer.vue';
@@ -9,22 +9,44 @@ import PlayersList from './PlayersList.vue';
 
 const toast = inject('toast')
 const apiURL = import.meta.env.VITE_API_URL
+
 const currentGame = ref(JSON.parse(localStorage.currentGame))
 const newGameData = ref(JSON.parse(localStorage.currentGame).gameData)
-console.log('setup currentGame', currentGame.value)
-const newCharacter = reactive({})
 
-console.log('import.meta.env', import.meta.env.VITE_API_URL)
+const newCharacter = reactive({})
+const users = ref()
 
 const charList = computed(() => {
 	return currentGame.value.characters
 })
+
+onBeforeMount(async () => {
+  await getUsers()
+})
+
+// onMounted(async () => {
+//   await getUsers()
+// })
 
 async function addChar() {
 	if(!newGameData.value.characters) newGameData.value.characters = []
 	newGameData.value.characters.push(JSON.parse(JSON.stringify(newCharacter)))
 	updateGameData(toRaw(newGameData.value), currentGame.value.id)
   Object.keys(newCharacter).forEach((key) => { newCharacter[key] = '' })
+}
+
+async function getUsers() {
+  await axios({
+    method: 'get',
+    url: `${apiURL}/user/list`,
+    params: { refreshToken: localStorage.refreshToken },
+    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
+  }).then(res => {
+    users.value = res.data
+    console.log('GOT USERS', users.value)
+  }).catch((error) => {
+    console.log(error)
+  })
 }
 
 async function getUpdatedGame(id) {
@@ -100,10 +122,10 @@ async function onPlayersUpdated(updatedGame) {
 </script>
 
 <template>
-  <TabView :scrollable="true">
+  <TabView :scrollable="true" :pt="{ panelContainer: { style: 'padding: 0;' } }">
     
     <TabPanel header="Characters">
-			<TabView :scrollable="true">
+			<TabView :scrollable="true" :pt="{ panelContainer: { style: 'padding: 0;' } }">
         <TabPanel :header="character.name" v-for="(character, charId) of charList" :key="charId">
           <CharacterPage 
           :character="character" 
@@ -132,9 +154,9 @@ async function onPlayersUpdated(updatedGame) {
       </TabView>
 		</TabPanel>
 		<TabPanel header="Game settings">
-      <PlayersList :currentGame="currentGame" @update-players="onPlayersUpdated" class=" mt-3 mb-4"></PlayersList>
-      <AddPlayer :currentGame="currentGame" @update-players="onPlayersUpdated" class=" mt-3 mb-4"></AddPlayer>
-      <RemovePlayer :currentGame="currentGame" @update-players="onPlayersUpdated" class="mb-4"></RemovePlayer>
+      <PlayersList :currentGame="currentGame" :users="users" @update-players="onPlayersUpdated" class=" mt-3 mb-4"></PlayersList>
+      <AddPlayer :currentGame="currentGame" :users="users" @update-players="onPlayersUpdated" class=" mt-3 mb-4"></AddPlayer>
+      <RemovePlayer :currentGame="currentGame" :users="users" @update-players="onPlayersUpdated" class="mb-4"></RemovePlayer>
 		</TabPanel>
   </TabView>
 </template>
@@ -144,7 +166,6 @@ async function onPlayersUpdated(updatedGame) {
   position: static;
   top: 20px;
   z-index: 3000;
-
 }
 
 </style>

@@ -1,8 +1,8 @@
 <script setup>
 import axios from 'axios';
-import { onMounted, ref, toRaw, inject } from 'vue';
+import { ref, toRaw, inject, watch } from 'vue';
 
-const props = defineProps(['currentGame'])
+const props = defineProps(['currentGame', 'users'])
 console.log('props.currentGame KEK', props)
 const emit = defineEmits(['updatePlayers'])
 const toast = inject('toast')
@@ -10,19 +10,9 @@ const apiURL = import.meta.env.VITE_API_URL
 const players = ref([])
 const selectedPlayers = ref([])
 
-async function getUsers() {
-  await axios({
-    method: 'get',
-    url: `${apiURL}/user/list`,
-    params: { refreshToken: localStorage.refreshToken },
-    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
-  }).then(res => {
-    console.log('List of users', res.data)
-    players.value = res.data
-  }).catch((error) => {
-    console.log(error)
-  })
-}
+watch(() => props.users, () => {
+  players.value = props.users
+})
 
 async function updatePlayers(players) {
   const game = {
@@ -61,10 +51,6 @@ async function addPlayers() {
   await updatePlayers(toRaw(selectedPlayers.value))
   selectedPlayers.value = []
 }
-
-onMounted(async () => {
-  await getUsers()
-})
 
 </script>
 

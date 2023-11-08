@@ -62,7 +62,7 @@ provide('toast', toast)
 
 onMounted(() => {
 	if (localStorage.theme) {
-		changeTheme(localStorage.theme)
+		changeTheme(localStorage.theme, localStorage.mode)
 		const newColors = getThemeColors(localStorage.theme)
   	updateColors(newColors.defaultColor, newColors.activeColor)
 	}

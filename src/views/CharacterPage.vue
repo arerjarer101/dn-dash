@@ -1,7 +1,11 @@
 <script setup>
 import axios from 'axios';
-import { computed, inject, ref, toRaw } from 'vue';
+import { inject, ref, toRaw } from 'vue';
 import { useConfirm } from "primevue/useconfirm";
+import SkillList from './components/SkillsList.vue'
+import InventoryList from './components/InventoryList.vue'
+import EffectList from './components/EffectList.vue'
+
 
 const toast = inject('toast')
 const apiURL = import.meta.env.VITE_API_URL
@@ -11,75 +15,9 @@ const props = defineProps(['character', 'charData'])
 const emit = defineEmits(['deleteCharacter', 'updateCharacter'])
 const newCharacter = ref(JSON.parse(JSON.stringify(props.character)))
 const newCharData = ref(JSON.parse(JSON.stringify(props.charData)))
-
-const newSkill = ref()
-const skillDialog = ref(false)
-const submittedSkill = ref(false);
-const selectedSkills = ref()
-const deleteSkillsDialog = ref(false)
-
-const openSkillDialog = () => {
-  newSkill.value = { level: 1 }
-  submittedSkill.value = false
-  skillDialog.value = true
-};
-const hideSkillDialog = () => {
-  skillDialog.value = false
-  submittedSkill.value = false
-};
-const addNewSkill = () => {
-  submittedSkill.value = true;
-
-  if (newSkill.value.name.trim()) {
-    // newSkill.value.id = newCharData.value.skills ? newCharData.value.skills.length + 1 : 1
-    newCharData.value.skills.push(newSkill.value);
-    toast.add({ severity: 'success', summary: 'Successful', detail: 'New skill added!', life: 3000 });
-
-    skillDialog.value = false;
-    newSkill.value = {};
-  }
-};
-const confirmDeleteSelected = () => {
-  deleteSkillsDialog.value = true;
-};
-const deleteSelectedSkills = () => {
-  newCharData.value.skills = newCharData.value.skills.filter(val => !selectedSkills.value.includes(val));
-  deleteSkillsDialog.value = false;
-  selectedSkills.value = null;
-  toast.add({ severity: 'success', summary: 'Deleted', detail: 'Selected skills deleted', life: 3000 });
-};
-
 if (!newCharData.value.skills) newCharData.value.skills = []
-const skillColumns = ref([
-  // { field: 'id', header: 'ID' },
-  { field: 'name', header: 'Skill' },
-  { field: 'level', header: 'Level' },
-  { field: 'description', header: 'Description' },
-])
-
-const dataBio = computed(() => {
-  return Object.entries(newCharData.value)
-})
-
-const onCellEditComplete = (event) => {
-  let { data, newValue, field } = event;
-
-  switch (field) {
-    case 'level':
-      data[field] = newValue;
-      break;
-    default:
-      if (newValue.trim().length > 0) data[field] = newValue;
-      else event.preventDefault();
-      break;
-  }
-};
-
-function onStateChanged($event) {
-  console.log($event.explicitOriginalTarget.id)
-
-  editedState.value[$event.explicitOriginalTarget.id] = true
-}
+if (!newCharData.value.items) newCharData.value.items = []
+if (!newCharData.value.effects) newCharData.value.effects = []
 
 function onReset() {
   newCharacter.value = JSON.parse(JSON.stringify(props.character))
@@ -96,7 +34,7 @@ async function onUpdateCharacter() {
   emit('updateCharacter', props.character.name)
 }
 
-const confirmDeleteCharacter = (character) => {
+const confirmDeleteCharacter = () => {
   confirm.require({
     message: 'Are you sure you want to proceed?',
     header: 'Confirmation',
@@ -160,29 +98,54 @@ async function updateCharacter() {
     });
   })
 }
+
+function onSkillsUpdated(updatedSkills) {
+  console.log('updatedSkills', updatedSkills)
+  newCharData.value.skills = updatedSkills
+}
+
+function onItemsUpdated(updatedItems) {
+  console.log('updatedItems', updatedItems)
+  newCharData.value.items = updatedItems
+}
+
+function onEffectsUpdated(updatedEffects) {
+  console.log('updatedEffects', updatedEffects)
+  newCharData.value.effects = updatedEffects
+}
+
 </script>
 
 <template>
-  <div class="flex mb-5 mt-4">
-    <span class="flex-2 flex flex-row gap-2 mr-5">
-      <label class="mt-3" for="name">Name:</label>
-      <InputText id="name" v-model="newCharacter.name" />
-    </span>
-    <span class="flex-2 flex flex-row gap-2 mr-5">
-      <label class="mt-3" for="level">Level:</label>
-      <InputNumber :inputStyle="{
-        'max-width': '4rem'
-      }" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" v-model="newCharData.level" inputId="level"
-        mode="decimal" showButtons buttonLayout="horizontal" :min="0" />
-    </span>
-    <span class="flex gap-2 mr-2 mt-2">
-      <label class="mt-2" for="colortag">Color tag:</label>
-      <ColorPicker class="ml-2" id="colortag" v-model="newCharData.colortag" />
-    </span>
+  <div class="pt-1 m-0 grid surface-section sticky z-5" style="top: 3rem">
+    <div class="col-8">
+      <span class="mr-3">
+        <label class="mr-2" for="name">Name:</label>
+        <InputText id="name" v-model="newCharacter.name" />
+      </span>
+      <span class="mr-3">
+        <label class="mr-2" for="level">Level:</label>
+        <InputNumber :inputStyle="{
+          'max-width': '4rem'
+        }" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" v-model="newCharData.level" inputId="level"
+          mode="decimal" showButtons buttonLayout="horizontal" :min="0" />
+      </span>
+      <span>
+        <label class="mr-2" for="colortag">Color tag:</label>
+        <ColorPicker id="colortag" v-model="newCharData.colortag" />
+      </span>
+    </div>
+    <div class="pt-3 col-4 text-right">
+      <Button class="mr-2" @click="onUpdateCharacter">&nbsp;Save</Button>
+      <Button class="mr-2" severity="info" @click="onReset">Discard changes</Button>
+      <Button class="mr-2" severity="danger" @click="onDeleteCharacter">Delete</Button>
+    </div>
+    <Divider class="mt-1 mb-0 m-0 p-0 "/>
   </div>
-  <Splitter class="mb-5">
+
+  <Splitter>
     <SplitterPanel class="p-3">
-      <Fieldset legend="Biography" :toggleable="true">
+      <Fieldset class="pt-3" legend="Biography" :toggleable="true">
         <div class="p-float-label flex flex-column gap-2 mb-4">
           <InputNumber v-model="newCharData.age" inputId="age" mode="decimal" showButtons :min="0" />
           <label for="age">Age</label>
@@ -203,111 +166,27 @@ async function updateCharacter() {
           <Textarea v-model="newCharData.story" cols="30"></Textarea>
         </Fieldset>
       </Fieldset>
-      <Fieldset class="mt-3" legend="Skills" :collapsed="false" :toggleable="true">
-        <Toolbar class="mb-4">
-          <template #start>
-            <Button label="New" icon="pi pi-plus" severity="success" class="mr-2" @click="openSkillDialog" />
-            <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected"
-              :disabled="!selectedSkills || !selectedSkills.length" />
-          </template>
-        </Toolbar>
-
-        <DataTable :value="newCharData.skills" v-model:selection="selectedSkills" :dataKey="name" :metaKeySelection="true"
-          editMode="cell" @cell-edit-complete="onCellEditComplete" :pt="{
-            table: { style: 'min-width: 50rem' },
-            column: {
-              bodycell: ({ state }) => ({
-                class: [{ 'pt-0 pb-0': state['d_editing'] }]
-              })
-            }
-          }">
-          <!-- <Column selectionMode="single" headerStyle="width: 3rem"></Column> -->
-          <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-          <Column v-for="col, id of skillColumns" :key="id" :field="col.field" :header="col.header"
-            :style="col.field === 'description' ? 'width: 75%' : col.field === 'name' ? 'width: 20%' : 'width: 5%'">
-            <template #body="{ data, field }">
-              <span>
-                {{ data[field] }}
-              </span>
-            </template>
-            <template #editor="{ data, field }">
-              <template v-if="field === 'level'">
-                <InputNumber v-model="data[field]" showButtons buttonLayout="vertical" style="width: 4rem" :min="0"
-                  autofocus />
-              </template>
-              <template v-else-if="field === 'description'">
-                <Textarea v-model="data[field]" :rows="5" :cols="50" />
-              </template>
-              <template v-else>
-                <InputText v-model="data[field]" autofocus />
-              </template>
-            </template>
-          </Column>
-        </DataTable>
-
-        <Dialog v-model:visible="skillDialog" :style="{ width: '45rem' }" header="Add a new skill" :modal="true"
-          class="p-fluid">
-          <div class="field">
-            <label for="name">Name</label>
-            <InputText id="name" v-model.trim="newSkill.name" required="true" autofocus
-              :class="{ 'p-invalid': submittedSkill && !newSkill.name }" />
-            <small class="p-error" v-if="submittedSkill && !newSkill.name">Name is required.</small>
-          </div>
-          <div class="field">
-            <label for="level">Level</label>
-            <InputNumber id="level" v-model="newSkill.level" integeronly showButtons :min="0" />
-          </div>
-          <div class="field">
-            <label for="description">Description</label>
-            <Textarea id="description" v-model="newSkill.description" required="true" rows="3" cols="20" />
-          </div>
-          <template #footer>
-            <Button label="Cancel" icon="pi pi-times" text @click="hideSkillDialog" />
-            <Button label="Save" icon="pi pi-check" text @click="addNewSkill" />
-          </template>
-        </Dialog>
-
-        <Dialog v-model:visible="deleteSkillsDialog" :style="{ width: '45rem' }" header="Delete selected skills" :modal="true">
-          <div class="confirmation-content">
-            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span v-if="selectedSkills">Are you sure you want to delete these skills: <b v-for="skill, id in selectedSkills" :key="id">&nbsp;{{ skill.name }}</b>?</span>
-          </div>
-          <template #footer>
-            <Button label="No" icon="pi pi-times" text @click="deleteSkillsDialog = false" />
-            <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedSkills" />
-          </template>
-        </Dialog>
-      </Fieldset>
-
+      <SkillList :skills="newCharData.skills" @update-skills="onSkillsUpdated"></SkillList>
     </SplitterPanel>
     <SplitterPanel class="p-3">
-      <Fieldset legend="Header" :toggleable="true">
-        <span class="p-float-label flex-1 flex flex-column gap-2 mr-2">
-          <InputText id="bio" v-model="newCharData.bio" />
-          <label for="bio">BIO</label>
-        </span>
+      <Fieldset class="pt-3" legend="Assets" :toggleable="true">
+        <div class="p-float-label flex flex-column gap-2 mb-4">
+          <InputNumber v-model="newCharData.money" inputId="money" mode="decimal" showButtons :min="0" />
+          <label for="money">Money</label>
+        </div>
+        <div class="p-float-label flex flex-column gap-2 mb-4">
+          <InputNumber v-model="newCharData.destiny" inputId="destiny" mode="decimal" showButtons :min="0" />
+          <label for="destiny">Destiny Points</label>
+        </div>
+        <div class="p-float-label flex flex-column gap-2 mb-4">
+          <InputNumber v-model="newCharData.durability" inputId="durability" mode="decimal" showButtons :min="0" />
+          <label for="durability">Durability</label>
+        </div>
       </Fieldset>
+      <InventoryList :items="newCharData.items" @update-items="onItemsUpdated"></InventoryList>
+      <EffectList :effects="newCharData.effects" @update-effects="onEffectsUpdated"></EffectList>
     </SplitterPanel>
   </Splitter>
-
-  <div class="mt-6 flex flex-row gap-2">
-    <Button severity="danger" @click="onDeleteCharacter">Delete</Button>
-    <Button severity="info" @click="onReset">Reset</Button>
-    <Button @click="onUpdateCharacter">&nbsp;Save</Button>
-  </div>
 </template>
 
-<style scoped>
-.opacity_1 {
-  opacity: 1;
-}
-
-.outline_edited {
-  outline: purple 3px;
-  color: rgb(29, 167, 155);
-}
-
-/* .input_field {
-  width: 10rem;
-} */
-</style>
+<style scoped></style>

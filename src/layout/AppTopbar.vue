@@ -19,7 +19,7 @@ onBeforeUnmount(() => {
 });
 
 const logoUrl = computed(() => {
-	return `../../public/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
+	return `/layout/images/logo.svg`;
 });
 
 // const onTopBarMenuButton = () => {
@@ -66,17 +66,18 @@ const isOutsideClicked = (event) => {
 </script>
 
 <template>
-	<div class="layout-topbar">
-		<Button class="" @click="routeBack" >Back</Button>
-		<!-- <router-link to="/" class="layout-topbar-logo ">
+	<div class="layout-topbar" style="height: 3rem;">
+		<!-- <router-link to="/created-games" class="layout-topbar-logo ">
 			<div class="logo">
 				<img :src="logoUrl" alt="logo" />
 			</div>
 		</router-link> -->
 
-		<button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
+		<button class="ml-1 p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
 			<i class="pi pi-bars"></i>
 		</button>
+
+		<Button style="height: 2rem;" @click="routeBack" >Back</Button>
 
 		<!-- <button class="p-link layout-topbar-menu-button layout-topbar-button mr-6" @click="onTopBarMenuButton()">
 			<i class="pi pi-ellipsis-v"></i>
@@ -110,5 +111,9 @@ const isOutsideClicked = (event) => {
 
 .logo img {
 	filter: brightness(1.2) grayscale(20%) drop-shadow(0 0 0.7rem var(--primary-color));
+}
+
+.layout-menu-button {
+	margin-right: 2rem;
 }
 </style>
