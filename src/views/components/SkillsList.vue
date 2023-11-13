@@ -78,9 +78,9 @@ watch(() => props.skills, () => {
 
 <template>
   <Fieldset class="mt-2" legend="Skills" :toggleable="true">
-    <Toolbar>
+    <Toolbar class="border-none">
       <template #start>
-        <Button label="New" icon="pi pi-plus" severity="success" class="mr-2" @click="openSkillDialog" />
+        <Button label="New" icon="pi pi-plus" outlined severity="success" class="mr-2" @click="openSkillDialog" />
         <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected"
           :disabled="!selectedSkills || !selectedSkills.length" />
       </template>
@@ -99,7 +99,7 @@ watch(() => props.skills, () => {
       <Column headerStyle="width: 3rem" v-for="col, id of skillColumns" :key="id" :field="col.field" :header="col.header"
         :style="col.field === 'description' ? 'width: 75%' : col.field === 'name' ? 'width: 20%' : 'width: 5%'">
         <template #body="{ data, field }">
-          <div :style="{ 'max-width': field === 'description' ? '20rem' : '5rem', 'flex-grow': '1', 'overflow-wrap': 'break-word'}">
+          <div :style="{ 'max-width': field === 'description' ? '20rem' : '10rem', 'flex-grow': '1', 'overflow-wrap': 'break-word'}">
             {{ data[field] }}
           </div>
         </template>

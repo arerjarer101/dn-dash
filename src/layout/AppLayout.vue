@@ -1,5 +1,5 @@
 <script setup>
-import { computed, watch, ref } from 'vue';
+import { computed, watch, ref, onBeforeMount } from 'vue';
 import AppTopbar from './AppTopbar.vue';
 import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
@@ -9,6 +9,11 @@ import { useLayout } from '@/layout/composables/layout';
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);
+const innerWidth = ref(window.innerWidth)
+
+onBeforeMount(() => {
+	// innerWidth.value = window.innerWidth
+})
 
 watch(isSidebarActive, (newVal) => {
 	if (newVal) {
@@ -55,21 +60,25 @@ const isOutsideClicked = (event) => {
 
 	return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 };
+
+console.log('window.innerWidth', innerWidth.value)
 </script>
 
 <template>
 	<div class="layout-wrapper" :class="containerClass">
 		<app-topbar></app-topbar>
-		<div class="layout-sidebar">
+		<div class="layout-sidebar surface-ground border-round-sm">
 			<app-sidebar></app-sidebar>
 		</div>
-		<div class="layout-main-container">
-			<div class="layout-main">
-				<ConfirmDialog></ConfirmDialog>
-				<Toast></Toast>
-				<router-view></router-view>
+		<div :class="[innerWidth > 991 ? 'ml__12' : '']">
+			<div :class="['layout-main-container']">
+				<div class="'layout-main'">
+					<ConfirmDialog></ConfirmDialog>
+					<Toast position="bottom-right"></Toast>
+					<router-view></router-view>
+				</div>
+				<app-footer></app-footer>
 			</div>
-			<app-footer></app-footer>
 		</div>
 		<app-config></app-config>
 		<div class="layout-mask"></div>
@@ -80,8 +89,20 @@ const isOutsideClicked = (event) => {
 .layout-main-container {
 	padding: 4rem 2rem 2rem 2rem;
 }
+
+.layout-wrapper.layout-static .ml__12 .layout-main-container {
+	margin-left: 12rem !important; 
+}
+
+.layout-wrapper.layout-static.layout-static-inactive .ml__12 .layout-main-container {
+	margin-left: 0 !important; 
+}
+
 .layout-sidebar {
 	top: 4rem;
   left: 1rem;
+	width: 12rem;
+	padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+	height: 93%;
 }
 </style>

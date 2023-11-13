@@ -21,7 +21,7 @@ const intervalRefresh = setInterval(() => {
   }
 }, 10000) 
 
-if (!isAuthenticated) router.push('/' + (localStorage.previousPath || 'login'))
+if (!isAuthenticated) router.push('/login')
 
 async function updateToken() {
   await axios({

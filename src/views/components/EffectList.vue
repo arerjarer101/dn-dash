@@ -50,8 +50,7 @@ const deleteSelectedEffects = () => {
 
 if (!effects.value) effects.value = []
 const effectColumns = ref([
-  { field: 'name', header: 'Effects' },
-  { field: 'level', header: 'Level' },
+  { field: 'name', header: 'Effect' },
   { field: 'description', header: 'Description' },
 ])
 
@@ -80,7 +79,7 @@ watch(() => props.effects, () => {
   <Fieldset class="mt-2" legend="Effects" :toggleable="true">
     <Toolbar>
       <template #start>
-        <Button label="New" icon="pi pi-plus" severity="success" class="mr-2" @click="openEffectsDialog" />
+        <Button label="New" icon="pi pi-plus" outlined severity="success" class="mr-2" @click="openEffectsDialog" />
         <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected"
           :disabled="!selectedEffects || !selectedEffects.length" />
       </template>
@@ -97,9 +96,9 @@ watch(() => props.effects, () => {
       <Column rowReorder headerStyle="width: 3rem" />
       <Column selectionMode="multiple" headerStyle="width: 3rem" />
       <Column v-for="col, id of effectColumns" :key="id" :field="col.field" :header="col.header"
-        :style="col.field === 'description' ? 'width: 75%' : col.field === 'name' ? 'width: 20%' : 'width: 5%'">
+        :style="col.field === 'description' ? 'width: 80%' :'width: 20%'">
         <template #body="{ data, field }">
-          <div :style="{ 'max-width': field === 'description' ? '20rem' : '5rem', 'flex-grow': '1', 'overflow-wrap': 'break-word'}">
+          <div :style="{ 'max-width': field === 'description' ? '20rem' : '10rem', 'flex-grow': '1', 'overflow-wrap': 'break-word'}">
             {{ data[field] }}
           </div>
         </template>

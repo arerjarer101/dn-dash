@@ -125,7 +125,11 @@ async function onPlayersUpdated(updatedGame) {
   <TabView :scrollable="true" :pt="{ panelContainer: { style: 'padding: 0;' } }">
     
     <TabPanel header="Characters">
-			<TabView :scrollable="true" :pt="{ panelContainer: { style: 'padding: 0;' } }">
+			<TabView :scrollable="true" class="z-5 mb-3" :pt="{ 
+          // root: { style: 'border: 1px solid red !important;' },
+          panelContainer: { style: 'padding: 10px 0 0 0;', class: ['surface-ground z-5 '] }, 
+          navContainer: { style: 'position: sticky; top: 3rem;', class: ['surface-section z-5 '] },
+        }">
         <TabPanel :header="character.name" v-for="(character, charId) of charList" :key="charId">
           <CharacterPage 
           :character="character" 

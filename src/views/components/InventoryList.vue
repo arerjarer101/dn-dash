@@ -51,7 +51,7 @@ const deleteSelectedItems = () => {
 if (!items.value) items.value = []
 const itemColumns = ref([
   { field: 'name', header: 'Item' },
-  { field: 'level', header: 'Level' },
+  { field: 'amount', header: 'Amount' },
   { field: 'description', header: 'Description' },
 ])
 
@@ -88,7 +88,7 @@ watch(() => props.items, () => {
   <Fieldset class="mt-2" legend="Items" :toggleable="true">
     <Toolbar>
       <template #start>
-        <Button label="New" icon="pi pi-plus" severity="success" class="mr-2" @click="openItemDialog" />
+        <Button label="New" icon="pi pi-plus" outlined severity="success" class="mr-2" @click="openItemDialog" />
         <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected"
           :disabled="!selectedItems || !selectedItems.length" />
       </template>
@@ -136,8 +136,8 @@ watch(() => props.items, () => {
       <small class="p-error" v-if="submittedItem && !newItem.name">Name is required.</small>
     </div>
     <div class="field">
-      <label for="level">Level</label>
-      <InputNumber id="level" v-model="newItem.level" integeronly showButtons :min="0" />
+      <label for="amount">Amount</label>
+      <InputNumber id="amount" v-model="newItem.amount" integeronly showButtons :min="0" />
     </div>
     <div class="field">
       <label for="description">Description</label>

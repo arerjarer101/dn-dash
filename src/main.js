@@ -1,4 +1,4 @@
-import { createApp, provide } from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
@@ -27,6 +27,7 @@ import ColorPicker from 'primevue/colorpicker';
 import Fieldset from 'primevue/fieldset';
 import Splitter from 'primevue/splitter';
 import SplitterPanel from 'primevue/splitterpanel';
+import Tag from 'primevue/tag';
 import Textarea from 'primevue/textarea';
 import Toolbar from 'primevue/toolbar';
 
@@ -38,7 +39,8 @@ const app = createApp(App);
 app.use(router)
 app.use(PrimeVue, {ripple: true});
 app.use(ToastService);
-app.use(ConfirmationService)
+app.use(ConfirmationService);
+// app.use(FilterMatchMode);
 
 app.component('Button', Button);
 app.component('InputText', InputText);
@@ -62,6 +64,7 @@ app.component('ColorPicker', ColorPicker);
 app.component('Fieldset', Fieldset);
 app.component('Splitter', Splitter);
 app.component('SplitterPanel', SplitterPanel);
+app.component('Tag', Tag);
 app.component('Textarea', Textarea);
 app.component('Toolbar', Toolbar);
 

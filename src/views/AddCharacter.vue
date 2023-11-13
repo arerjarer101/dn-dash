@@ -7,21 +7,24 @@ const apiURL = import.meta.env.VITE_API_URL
 
 const props = defineProps(['currentGame'])
 const emit = defineEmits(['updateCharacters'])
-const newCharacter = reactive({})
-const newCharData = reactive({})
+const newCharacter = ref({})
+const newCharData = ref({})
 const isNPC = ref(false)
 const selectedPlayer = ref({})
 
 async function addChar() {
   await createCharacter()
+  newCharData.value = {}
+  newCharacter.value = {}
+  selectedPlayer.value = {}
   emit('updateCharacters')
 }
 
 async function createCharacter() {
   const character = {
     playerId: selectedPlayer.value.id,
-    name: newCharacter.name,
-    charData: newCharData
+    name: newCharacter.value.name,
+    charData: newCharData.value
   }
   await axios({
     method: 'post',

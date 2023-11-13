@@ -5,7 +5,7 @@ import { useConfirm } from "primevue/useconfirm";
 import SkillList from './components/SkillsList.vue'
 import InventoryList from './components/InventoryList.vue'
 import EffectList from './components/EffectList.vue'
-
+import AbilityList from './components/AbilityList.vue'
 
 const toast = inject('toast')
 const apiURL = import.meta.env.VITE_API_URL
@@ -18,11 +18,15 @@ const newCharData = ref(JSON.parse(JSON.stringify(props.charData)))
 if (!newCharData.value.skills) newCharData.value.skills = []
 if (!newCharData.value.items) newCharData.value.items = []
 if (!newCharData.value.effects) newCharData.value.effects = []
+if (!newCharData.value.abilities) newCharData.value.abilities = []
 
 function onReset() {
   newCharacter.value = JSON.parse(JSON.stringify(props.character))
   newCharData.value = JSON.parse(JSON.stringify(props.charData))
   if (!newCharData.value.skills) newCharData.value.skills = []
+  if (!newCharData.value.items) newCharData.value.items = []
+  if (!newCharData.value.effects) newCharData.value.effects = []
+  if (!newCharData.value.abilities) newCharData.value.abilities = []
 }
 
 async function onDeleteCharacter() {
@@ -114,37 +118,44 @@ function onEffectsUpdated(updatedEffects) {
   newCharData.value.effects = updatedEffects
 }
 
+function onAbilitiesUpdated(updatedAbilities) {
+  console.log('updatedAbilities', updatedAbilities)
+  newCharData.value.abilities = updatedAbilities
+}
+
 </script>
 
 <template>
-  <div class="pt-1 m-0 grid surface-section sticky z-5" style="top: 3rem">
-    <div class="col-8">
-      <span class="mr-3">
-        <label class="mr-2" for="name">Name:</label>
-        <InputText id="name" v-model="newCharacter.name" />
-      </span>
-      <span class="mr-3">
-        <label class="mr-2" for="level">Level:</label>
-        <InputNumber :inputStyle="{
-          'max-width': '4rem'
-        }" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" v-model="newCharData.level" inputId="level"
-          mode="decimal" showButtons buttonLayout="horizontal" :min="0" />
-      </span>
-      <span>
-        <label class="mr-2" for="colortag">Color tag:</label>
-        <ColorPicker id="colortag" v-model="newCharData.colortag" />
-      </span>
-    </div>
-    <div class="pt-3 col-4 text-right">
-      <Button class="mr-2" @click="onUpdateCharacter">&nbsp;Save</Button>
-      <Button class="mr-2" severity="info" @click="onReset">Discard changes</Button>
-      <Button class="mr-2" severity="danger" @click="onDeleteCharacter">Delete</Button>
-    </div>
-    <Divider class="mt-1 mb-0 m-0 p-0 "/>
+  <div class="surface-section border-bottom-1 border-noround-bottom surface-border xl:sticky lg:sticky md:relative sm:relative z-4" style="height: 6.5rem; top: 5rem;">
+    <Toolbar class="surface-section border-none xl:sticky lg:sticky md:relative sm:relative z-4" style="top: 6.5rem; ">
+      <template #start>
+          <span class="mr-3">
+            <label class="mr-2" for="name">Name:</label>
+            <InputText id="name" v-model="newCharacter.name" />
+          </span>
+          <span class="mr-3">
+            <label class="mr-2" for="level">Level:</label>
+            <InputNumber :inputStyle="{
+              'max-width': '4rem'
+            }" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" v-model="newCharData.level"
+              inputId="level" mode="decimal" showButtons buttonLayout="horizontal" :min="0" />
+          </span>
+          <span>
+            <label class="mr-2" for="colortag">Color tag:</label>
+            <ColorPicker id="colortag" v-model="newCharData.colortag" />
+          </span>
+        <!-- <Divider class="mt-1 mb-0" /> -->
+      </template>
+      <template #end>
+          <Button class="mr-2 lg:mt-0 sm:mt-2" severity="success" @click="onUpdateCharacter">&nbsp;Save</Button>
+          <Button class="mr-2 lg:mt-0 sm:mt-2" severity="info" outlined @click="onReset">Discard changes</Button>
+          <Button class="mr-2 lg:mt-0 sm:mt-2" severity="danger" outlined @click="onDeleteCharacter">Delete</Button>
+        <!-- <Divider class="mt-1 mb-0" /> -->
+      </template>
+    </Toolbar>
   </div>
-
-  <Splitter>
-    <SplitterPanel class="p-3">
+  <Splitter class="surface-ground" style="border: none;">
+    <SplitterPanel class="p-3 pt-5">
       <Fieldset class="pt-3" legend="Biography" :toggleable="true">
         <div class="p-float-label flex flex-column gap-2 mb-4">
           <InputNumber v-model="newCharData.age" inputId="age" mode="decimal" showButtons :min="0" />
@@ -167,8 +178,9 @@ function onEffectsUpdated(updatedEffects) {
         </Fieldset>
       </Fieldset>
       <SkillList :skills="newCharData.skills" @update-skills="onSkillsUpdated"></SkillList>
+      <AbilityList :abilities="newCharData.abilities" @update-abilities="onAbilitiesUpdated"></AbilityList>
     </SplitterPanel>
-    <SplitterPanel class="p-3">
+    <SplitterPanel class="p-3 pt-5">
       <Fieldset class="pt-3" legend="Assets" :toggleable="true">
         <div class="p-float-label flex flex-column gap-2 mb-4">
           <InputNumber v-model="newCharData.money" inputId="money" mode="decimal" showButtons :min="0" />

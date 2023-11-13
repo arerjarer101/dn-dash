@@ -1,10 +1,10 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 // import { useRouter } from 'vue-router';
 
-const { layoutConfig, onMenuToggle } = useLayout();
+const { onMenuToggle } = useLayout();
 const router = useRouter()
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
@@ -18,9 +18,9 @@ onBeforeUnmount(() => {
 	unbindOutsideClickListener();
 });
 
-const logoUrl = computed(() => {
-	return `/layout/images/logo.svg`;
-});
+// const logoUrl = computed(() => {
+// 	return `/layout/images/logo.svg`;
+// });
 
 // const onTopBarMenuButton = () => {
 // 	topbarMenuActive.value = !topbarMenuActive.value;
@@ -66,7 +66,7 @@ const isOutsideClicked = (event) => {
 </script>
 
 <template>
-	<div class="layout-topbar" style="height: 3rem;">
+	<div class="layout-topbar surface-ground surface-border" style="height: 3rem; border-bottom: 1px solid; border-top: 1px solid">
 		<!-- <router-link to="/created-games" class="layout-topbar-logo ">
 			<div class="logo">
 				<img :src="logoUrl" alt="logo" />
