@@ -19,8 +19,6 @@ function changeTheme (theme, mode) {
 
   localStorage.mode = mode
   localStorage.theme = theme
-
-  console.log(localStorage)
 };
 
 export {changeTheme}

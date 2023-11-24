@@ -125,12 +125,6 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <!-- <GamePage v-if="showGame" 
-    :currentGame="currentGame" 
-    @updateGameData="(newGameData, gameId) => {updateGameData(newGameData, gameId)}" 
-    @goBack="gameSelected = false; currentGame = ''"
-  ></GamePage> -->
-  
   <div>
     <Card>
       <template #title>Create a game</template>

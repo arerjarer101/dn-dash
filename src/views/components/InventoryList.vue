@@ -3,7 +3,7 @@ import { ref, inject, watch } from 'vue';
 
 const toast = inject('toast')
 
-const props = defineProps(['items'])
+const props = defineProps(['readonly', 'items'])
 const emit = defineEmits(['updateItems'])
 
 const items = ref(JSON.parse(JSON.stringify(props.items)))
@@ -58,15 +58,6 @@ const itemColumns = ref([
 const onCellEditComplete = (event) => {
   let { data, newValue, field } = event;
   data[field] = newValue
-  // switch (field) {
-  //   case 'level':
-  //     data[field] = newValue;
-  //     break;
-  //   default:
-  //     if (newValue.trim().length > 0) data[field] = newValue;
-  //     else event.preventDefault();
-  //     break;
-  // }
   console.log('emit updateItems', items.value)
   emit('updateItems', items.value)
 };
@@ -86,7 +77,7 @@ watch(() => props.items, () => {
 
 <template>
   <Fieldset class="mt-2" legend="Items" :toggleable="true">
-    <Toolbar>
+    <Toolbar v-if="!props.readonly">
       <template #start>
         <Button label="New" icon="pi pi-plus" outlined severity="success" class="mr-2" @click="openItemDialog" />
         <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected"
@@ -102,8 +93,8 @@ watch(() => props.items, () => {
           })
         }
       }">
-      <Column rowReorder headerStyle="width: 3rem" />
-      <Column selectionMode="multiple" headerStyle="width: 3rem" />
+      <Column v-if="!props.readonly" rowReorder headerStyle="width: 3rem" />
+      <Column v-if="!props.readonly" selectionMode="multiple" headerStyle="width: 3rem" />
       <Column v-for="col, id of itemColumns" :key="id" :field="col.field" :header="col.header"
         :style="col.field === 'description' ? 'width: 75%' : col.field === 'name' ? 'width: 20%' : 'width: 5%'">
         <template #body="{ data, field }">
@@ -111,7 +102,7 @@ watch(() => props.items, () => {
             {{ data[field] }}
           </div>
         </template>
-        <template #editor="{ data, field }">
+        <template v-if="!props.readonly" #editor="{ data, field }">
           <template v-if="field === 'level'">
             <InputNumber v-model="data[field]" showButtons buttonLayout="vertical" style="width: 4rem" :min="0"
               autofocus />

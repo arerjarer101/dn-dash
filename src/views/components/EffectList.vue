@@ -3,7 +3,7 @@ import { ref, inject, watch } from 'vue';
 
 const toast = inject('toast')
 
-const props = defineProps(['effects'])
+const props = defineProps(['readonly', 'effects'])
 const emit = defineEmits(['updateEffects'])
 
 const effects = ref(JSON.parse(JSON.stringify(props.effects)))
@@ -77,7 +77,7 @@ watch(() => props.effects, () => {
 
 <template>
   <Fieldset class="mt-2" legend="Effects" :toggleable="true">
-    <Toolbar>
+    <Toolbar v-if="!props.readonly">
       <template #start>
         <Button label="New" icon="pi pi-plus" outlined severity="success" class="mr-2" @click="openEffectsDialog" />
         <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected"
@@ -93,8 +93,8 @@ watch(() => props.effects, () => {
           })
         }
       }">
-      <Column rowReorder headerStyle="width: 3rem" />
-      <Column selectionMode="multiple" headerStyle="width: 3rem" />
+      <Column v-if="!props.readonly" rowReorder headerStyle="width: 3rem" />
+      <Column v-if="!props.readonly" selectionMode="multiple" headerStyle="width: 3rem" />
       <Column v-for="col, id of effectColumns" :key="id" :field="col.field" :header="col.header"
         :style="col.field === 'description' ? 'width: 80%' :'width: 20%'">
         <template #body="{ data, field }">
@@ -102,7 +102,7 @@ watch(() => props.effects, () => {
             {{ data[field] }}
           </div>
         </template>
-        <template #editor="{ data, field }">
+        <template v-if="!props.readonly" #editor="{ data, field }">
           <template v-if="field === 'level'">
             <InputNumber v-model="data[field]" showButtons buttonLayout="vertical" style="width: 4rem" :min="0"
               autofocus />

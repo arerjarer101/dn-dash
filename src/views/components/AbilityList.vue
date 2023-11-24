@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 
-const props = defineProps(['abilities'])
+const props = defineProps(['readonly','abilities'])
 const emit = defineEmits(['updateAbilities'])
 
 const abilities = ref(JSON.parse(JSON.stringify(props.abilities)))
@@ -95,7 +95,7 @@ watch(() => props.abilities, () => {
 
 <template>
   <Fieldset class="mt-2" legend="Abilities" :toggleable="true">
-    <Toolbar>
+    <Toolbar v-if="!props.readonly">
       <template #start>
         <Button label="New" icon="pi pi-plus" outlined severity="success" class="mr-2" @click="openAbilityDialog" />
         <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected"
@@ -118,8 +118,8 @@ watch(() => props.abilities, () => {
           <InputText v-model="filters['global'].value" placeholder="Global Search" />
         </span>
       </template> -->
-      <Column rowReorder headerStyle="width: 3rem" />
-      <Column selectionMode="multiple" headerStyle="width: 3rem" />
+      <Column v-if="!props.readonly" rowReorder headerStyle="width: 3rem" />
+      <Column v-if="!props.readonly" selectionMode="multiple" headerStyle="width: 3rem" />
       <Column headerStyle="width: 3rem" v-for="col, id of abilityColumns" :key="id" :field="col.field" sortable filter
         :header="col.header" :style="col.field === 'description' ? 'width: 70%' : 'width: 10%'">
         <template #body="{ data, field }">
@@ -147,7 +147,7 @@ watch(() => props.abilities, () => {
           </Dropdown>
         </template>
 
-        <template #editor="{ data, field }">
+        <template v-if="!props.readonly" #editor="{ data, field }">
           <template v-if="field === 'difficulty'">
             <InputNumber v-model="data[field]" showButtons buttonLayout="vertical" style="width: 4rem" :min="0"
               autofocus />

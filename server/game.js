@@ -75,6 +75,42 @@ router.get('/created', authenticateToken, async (req, res) => {
   }
 })
 
+router.get('/participated', authenticateToken, async (req, res) => {
+  try {
+    console.log(req.user.id)
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.user.id
+      },
+      include: {
+        participatedGames: {
+          include: {
+            players: true,
+            characters: true
+          }
+        }
+      }
+    })
+
+    const userGames = user.participatedGames
+    userGames.forEach(e => {
+      e.gameData = JSON.parse(e.gameData)
+      // console.log('user.id', user.id)
+      // console.log('e.characters', e.characters)
+      e.characters = e.characters.filter(character => {
+        console.log('user.id', user.id)
+        console.log('e.characters.character.userId', character.userId)
+        return character.userId === user.id
+      })
+    })
+
+    res.json({ userGames })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: error.message });
+  }
+})
+
 router.post('/update/gameData', authenticateToken, async (req, res) => {
   try {
     const updatedGame = await prisma.game.update({

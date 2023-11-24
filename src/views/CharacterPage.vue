@@ -11,7 +11,7 @@ const toast = inject('toast')
 const apiURL = import.meta.env.VITE_API_URL
 const confirm = useConfirm();
 
-const props = defineProps(['character', 'charData'])
+const props = defineProps(['readonly', 'character', 'charData'])
 const emit = defineEmits(['deleteCharacter', 'updateCharacter'])
 const newCharacter = ref(JSON.parse(JSON.stringify(props.character)))
 const newCharData = ref(JSON.parse(JSON.stringify(props.charData)))
@@ -126,7 +126,7 @@ function onAbilitiesUpdated(updatedAbilities) {
 </script>
 
 <template>
-  <div class="surface-section border-bottom-1 border-noround-bottom surface-border xl:sticky lg:sticky md:relative sm:relative z-4" style="height: 6.5rem; top: 5rem;">
+  <div v-if="!props.readonly" class="surface-section border-bottom-1 border-noround-bottom surface-border xl:sticky lg:sticky md:relative sm:relative z-4" style="height: 6.5rem; top: 5rem;">
     <Toolbar class="surface-section border-none xl:sticky lg:sticky md:relative sm:relative z-4" style="top: 6.5rem; ">
       <template #start>
           <span class="mr-3">
@@ -158,45 +158,45 @@ function onAbilitiesUpdated(updatedAbilities) {
     <SplitterPanel class="p-3 pt-5">
       <Fieldset class="pt-3" legend="Biography" :toggleable="true">
         <div class="p-float-label flex flex-column gap-2 mb-4">
-          <InputNumber v-model="newCharData.age" inputId="age" mode="decimal" showButtons :min="0" />
+          <InputNumber :readonly="props.readonly" :showButtons="!props.readonly" v-model="newCharData.age" inputId="age" mode="decimal"  :min="0" />
           <label for="age">Age</label>
         </div>
         <div class="p-float-label flex flex-column gap-2 mb-4">
-          <InputText id="style" v-model="newCharData.style" />
+          <InputText :readonly="props.readonly" id="style" v-model="newCharData.style" />
           <label for="style">Style</label>
         </div>
         <div class="p-float-label flex flex-column gap-2 mb-4">
-          <InputText id="ideals" v-model="newCharData.ideals" />
+          <InputText :readonly="props.readonly" id="ideals" v-model="newCharData.ideals" />
           <label for="ideals">Ideals</label>
         </div>
         <div class="p-float-label flex flex-column gap-2 mb-4">
-          <InputText id="chartraits" v-model="newCharData.chartraits" />
+          <InputText :readonly="props.readonly" id="chartraits" v-model="newCharData.chartraits" />
           <label for="chartraits">Character traits</label>
         </div>
         <Fieldset legend="Story" :collapsed="true" :toggleable="true">
-          <Textarea v-model="newCharData.story" cols="30"></Textarea>
+          <Textarea :readonly="props.readonly" v-model="newCharData.story" cols="30"></Textarea>
         </Fieldset>
       </Fieldset>
-      <SkillList :skills="newCharData.skills" @update-skills="onSkillsUpdated"></SkillList>
-      <AbilityList :abilities="newCharData.abilities" @update-abilities="onAbilitiesUpdated"></AbilityList>
+      <SkillList :readonly="props.readonly" :skills="newCharData.skills" @update-skills="onSkillsUpdated"></SkillList>
+      <AbilityList :readonly="props.readonly" :abilities="newCharData.abilities" @update-abilities="onAbilitiesUpdated"></AbilityList>
     </SplitterPanel>
     <SplitterPanel class="p-3 pt-5">
       <Fieldset class="pt-3" legend="Assets" :toggleable="true">
         <div class="p-float-label flex flex-column gap-2 mb-4">
-          <InputNumber v-model="newCharData.money" inputId="money" mode="decimal" showButtons :min="0" />
+          <InputNumber :readonly="props.readonly" :showButtons="!props.readonly" v-model="newCharData.money" inputId="money" mode="decimal" :min="0" />
           <label for="money">Money</label>
         </div>
         <div class="p-float-label flex flex-column gap-2 mb-4">
-          <InputNumber v-model="newCharData.destiny" inputId="destiny" mode="decimal" showButtons :min="0" />
+          <InputNumber :readonly="props.readonly" :showButtons="!props.readonly" v-model="newCharData.destiny" inputId="destiny" mode="decimal" :min="0" />
           <label for="destiny">Destiny Points</label>
         </div>
         <div class="p-float-label flex flex-column gap-2 mb-4">
-          <InputNumber v-model="newCharData.durability" inputId="durability" mode="decimal" showButtons :min="0" />
+          <InputNumber :readonly="props.readonly" :showButtons="!props.readonly" v-model="newCharData.durability" inputId="durability" mode="decimal" :min="0" />
           <label for="durability">Durability</label>
         </div>
       </Fieldset>
-      <InventoryList :items="newCharData.items" @update-items="onItemsUpdated"></InventoryList>
-      <EffectList :effects="newCharData.effects" @update-effects="onEffectsUpdated"></EffectList>
+      <InventoryList :readonly="props.readonly" :items="newCharData.items" @update-items="onItemsUpdated"></InventoryList>
+      <EffectList :readonly="props.readonly" :effects="newCharData.effects" @update-effects="onEffectsUpdated"></EffectList>
     </SplitterPanel>
   </Splitter>
 </template>

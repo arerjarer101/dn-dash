@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import ProfileSettings from '../views/ProfileSettings.vue'
 import CreatedGames from '../views/CreatedGames.vue'
 import GamePage from '../views/GamePage.vue'
+import GameParticipated from '../views/GameParticipated.vue'
 import ParticipatedGames from '../views/ParticipatedGames.vue'
 import UiSettings from '../views/UiSettings.vue'
 import AppLayout from '@/layout/AppLayout.vue'
@@ -42,7 +43,12 @@ const router = createRouter({
         {
           path: '/participated-games',
           component: ParticipatedGames,
-        }
+        },
+        {
+          path: '/participated-games/:gameId',
+          name: 'game-participated',
+          component: GameParticipated,
+        },
       ]
     },
     {

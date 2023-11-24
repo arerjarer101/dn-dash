@@ -3,7 +3,7 @@ import { ref, inject, watch } from 'vue';
 
 const toast = inject('toast')
 
-const props = defineProps(['skills'])
+const props = defineProps(['readonly','skills'])
 const emit = defineEmits(['updateSkills'])
 
 const skills = ref(JSON.parse(JSON.stringify(props.skills)))
@@ -78,7 +78,7 @@ watch(() => props.skills, () => {
 
 <template>
   <Fieldset class="mt-2" legend="Skills" :toggleable="true">
-    <Toolbar class="border-none">
+    <Toolbar v-if="!props.readonly" class="border-none">
       <template #start>
         <Button label="New" icon="pi pi-plus" outlined severity="success" class="mr-2" @click="openSkillDialog" />
         <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected"
@@ -94,8 +94,8 @@ watch(() => props.skills, () => {
           })
         }
       }">
-      <Column rowReorder headerStyle="width: 3rem" />
-      <Column selectionMode="multiple" headerStyle="width: 3rem" />
+      <Column v-if="!props.readonly" rowReorder headerStyle="width: 3rem" />
+      <Column v-if="!props.readonly" selectionMode="multiple" headerStyle="width: 3rem" />
       <Column headerStyle="width: 3rem" v-for="col, id of skillColumns" :key="id" :field="col.field" :header="col.header"
         :style="col.field === 'description' ? 'width: 75%' : col.field === 'name' ? 'width: 20%' : 'width: 5%'">
         <template #body="{ data, field }">
@@ -103,7 +103,7 @@ watch(() => props.skills, () => {
             {{ data[field] }}
           </div>
         </template>
-        <template #editor="{ data, field }">
+        <template v-if="!props.readonly" #editor="{ data, field }">
           <template v-if="field === 'level'">
             <InputNumber v-model="data[field]" showButtons buttonLayout="vertical" style="width: 4rem" :min="0"
               autofocus />
