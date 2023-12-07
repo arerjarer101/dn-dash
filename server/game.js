@@ -75,6 +75,30 @@ router.get('/created', authenticateToken, async (req, res) => {
   }
 })
 
+router.get('/:gameId/characters/parsed', authenticateToken, async (req, res) => {
+  try {
+    const game = await prisma.game.findUnique({
+      where: {
+        id: Number(req.params.gameId),
+      },
+      include: {
+        characters: true
+      }
+    })
+    if (game.creatorId !== req.user.id) {
+      throw({message: 'access denied'})
+    }
+    const parsedCharacters = game.characters
+    parsedCharacters.forEach(e => {
+      e.charData = JSON.parse(e.charData)
+    })
+    res.json({ parsedCharacters })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: error.message });
+  }
+})
+
 router.get('/participated', authenticateToken, async (req, res) => {
   try {
     console.log(req.user.id)

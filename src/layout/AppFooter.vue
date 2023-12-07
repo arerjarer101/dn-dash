@@ -13,7 +13,9 @@ const logoUrl = computed(() => {
 <template>
 	<div class="layout-footer">
 		<div class="logo">
-			<img :src="logoUrl" alt="Logo" height="30" class="mr-2" />
+			<a href="https://github.com/arerjarer101/dn-dash">
+				<img :src="logoUrl" alt="Logo" height="30" class="mr-2" />
+			</a>
 		</div>
 	</div>
 </template>

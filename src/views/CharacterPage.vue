@@ -13,8 +13,10 @@ const confirm = useConfirm();
 
 const props = defineProps(['readonly', 'character', 'charData'])
 const emit = defineEmits(['deleteCharacter', 'updateCharacter'])
+
 const newCharacter = ref(JSON.parse(JSON.stringify(props.character)))
 const newCharData = ref(JSON.parse(JSON.stringify(props.charData)))
+
 if (!newCharData.value.skills) newCharData.value.skills = []
 if (!newCharData.value.items) newCharData.value.items = []
 if (!newCharData.value.effects) newCharData.value.effects = []
@@ -196,6 +198,7 @@ function onAbilitiesUpdated(updatedAbilities) {
         </div>
       </Fieldset>
       <InventoryList :readonly="props.readonly" :items="newCharData.items" @update-items="onItemsUpdated"></InventoryList>
+
       <EffectList :readonly="props.readonly" :effects="newCharData.effects" @update-effects="onEffectsUpdated"></EffectList>
     </SplitterPanel>
   </Splitter>

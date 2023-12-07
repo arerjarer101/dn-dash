@@ -1,19 +1,18 @@
 <script setup>
 import axios from 'axios';
-import { computed, inject, onBeforeMount, reactive, ref, toRaw } from 'vue';
+import { computed, inject, onBeforeMount, ref } from 'vue';
 import CharacterPage from './CharacterPage.vue';
 import AddCharacter from './AddCharacter.vue';
 import AddPlayer from './AddPlayer.vue';
 import RemovePlayer from './RemovePlayer.vue';
 import PlayersList from './PlayersList.vue';
+import SharedInventory from './components/SharedInventory.vue';
 
 const toast = inject('toast')
 const apiURL = import.meta.env.VITE_API_URL
 
 const currentGame = ref(JSON.parse(localStorage.currentGame))
 const newGameData = ref(JSON.parse(localStorage.currentGame).gameData)
-
-const newCharacter = reactive({})
 const users = ref()
 
 const charList = computed(() => {
@@ -23,17 +22,6 @@ const charList = computed(() => {
 onBeforeMount(async () => {
   await getUsers()
 })
-
-// onMounted(async () => {
-//   await getUsers()
-// })
-
-async function addChar() {
-	if(!newGameData.value.characters) newGameData.value.characters = []
-	newGameData.value.characters.push(JSON.parse(JSON.stringify(newCharacter)))
-	updateGameData(toRaw(newGameData.value), currentGame.value.id)
-  Object.keys(newCharacter).forEach((key) => { newCharacter[key] = '' })
-}
 
 async function getUsers() {
   await axios({
@@ -71,35 +59,6 @@ async function getUpdatedGame(id) {
   })
 }
 
-async function updateGameData(gameData, gameId) {
-  const game = {
-    id: gameId,
-    gameData: gameData
-  }
-
-  await axios({
-    method: 'post',
-    url: `${apiURL}/game/update/gameData`, 
-    data: { game }, 
-    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` } 
-  }).then(res => {
-    toast.add({
-      severity: 'success', summary: `Added`, detail: `Character ${res.data} added`, life: 3000
-    });
-
-		console.log(res.data.updatedGame)
-		currentGame.value = res.data.updatedGame
-		localStorage.currentGame = JSON.stringify(res.data.updatedGame)
-		newGameData.value = JSON.parse(localStorage.currentGame).gameData
-    
-  }).catch(error => {
-    console.log(error.message)
-    toast.add({
-			severity: 'error', summary: 'An error occured when creating a game', detail: error.response.data.error, life: 10000
-		});
-  })
-}
-
 async function onCharactersUpdated() {
   console.log('characters updated')
   currentGame.value = JSON.parse(localStorage.currentGame)
@@ -119,11 +78,14 @@ async function onPlayersUpdated(updatedGame) {
   console.log('emitted updatedGame', updatedGame)
   currentGame.value = JSON.parse(localStorage.currentGame)
 }
+
+async function onItemsTransferred() {
+  await getUpdatedGame(currentGame.value.id)
+}
 </script>
 
 <template>
   <TabView :scrollable="true" :pt="{ panelContainer: { style: 'padding: 0;' } }">
-    
     <TabPanel header="Characters">
 			<TabView :scrollable="true" class="z-5 mb-3" :pt="{ 
           // root: { style: 'border: 1px solid red !important;' },
@@ -137,30 +99,20 @@ async function onPlayersUpdated(updatedGame) {
           @delete-character="(name) => onCharacterDeleted(name)"
           @update-character="(name) => onCharacterUpdated(name)"></CharacterPage>
         </TabPanel>
-        <!-- <TabPanel header="+old+">
-          <Card class="mb-3">
-            <template #title>Add a character</template>
-            <template #content>
-              <div class="flex flex-column gap-2 mb-4">
-                <label for="name">Character name</label>
-                <InputText id="username" v-model="newCharacter.name" aria-describedby="username-help" />
-                <small id="name-help">A new challenger appears!</small>
-              </div>
-
-              <Button v-if="newCharacter.name" @click="addChar()" class="mr-2">Add char</Button>
-              <Button v-else disabled class="mr-2">Add char</Button>
-            </template>
-          </Card>
-        </TabPanel> -->
         <TabPanel header="+ add a character">
           <AddCharacter :currentGame="currentGame" @update-characters="onCharactersUpdated"></AddCharacter>
         </TabPanel>
       </TabView>
 		</TabPanel>
+
 		<TabPanel header="Game settings">
       <PlayersList :currentGame="currentGame" :users="users" @update-players="onPlayersUpdated" class=" mt-3 mb-4"></PlayersList>
       <AddPlayer :currentGame="currentGame" :users="users" @update-players="onPlayersUpdated" class=" mt-3 mb-4"></AddPlayer>
       <RemovePlayer :currentGame="currentGame" :users="users" @update-players="onPlayersUpdated" class="mb-4"></RemovePlayer>
+		</TabPanel>
+
+    <TabPanel v-if="currentGame.characters.length > 0" header="Shared inventory">
+      <SharedInventory :currentGameCharacters="currentGame.characters" :readonly="false" @items-transferred="onItemsTransferred"></SharedInventory>
 		</TabPanel>
   </TabView>
 </template>

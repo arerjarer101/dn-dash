@@ -16,7 +16,7 @@ const selectedItems = ref()
 const deleteItemsDialog = ref(false)
 
 const openItemDialog = () => {
-  newItem.value = { level: 1 }
+  newItem.value = { amount: 1 }
   submittedItem.value = false
   itemDialog.value = true
 };
@@ -26,6 +26,13 @@ const hideItemDialog = () => {
 };
 const addNewItem = () => {
   submittedItem.value = true;
+
+  if (isNameDuplicate(newItem.value.name)) {
+    toast.add({ severity: 'error', summary: 'Already Exists!', detail: `Item ${newItem.value.name} already exists`, life: 3000 });
+    itemDialog.value = false;
+    newItem.value = {};
+    return;
+  }
 
   if (newItem.value.name.trim()) {
     items.value.push(newItem.value);
@@ -53,10 +60,15 @@ const itemColumns = ref([
   { field: 'name', header: 'Item' },
   { field: 'amount', header: 'Amount' },
   { field: 'description', header: 'Description' },
+  { field: 'equipped', header: 'Equipped' },
 ])
 
 const onCellEditComplete = (event) => {
   let { data, newValue, field } = event;
+  if (field === 'name' && data[field] !== newValue && isNameDuplicate(newValue)) {
+    toast.add({ severity: 'error', summary: 'Already Exists!', detail: `Item ${newValue} already exists`, life: 3000 });
+    return;
+  }
   data[field] = newValue
   console.log('emit updateItems', items.value)
   emit('updateItems', items.value)
@@ -66,6 +78,17 @@ const onRowReorder = (event) => {
   items.value = event.value
   console.log('emit updateItems', items.value)
   emit('updateItems', items.value)
+}
+
+const isNameDuplicate = (name) => {
+  return items.value.findIndex(e => e.name === name) >= 0
+}
+
+const setEquippedItemStyle = (data) => {
+  let style = ''
+  let color = 'var(--primary-600)'
+  if(data.equipped) style = `background-image: linear-gradient(to right, ${color}, color-mix(in srgb, ${color} 30%, transparent) 5%, color-mix(in srgb, ${color} 1%, transparent) 10%, color-mix(in srgb, ${color} 2%, transparent) 75%, color-mix(in srgb, ${color} 20%, transparent) 90%, ${color});`
+  return style
 }
 
 watch(() => props.items, () => {
@@ -85,7 +108,10 @@ watch(() => props.items, () => {
       </template>
     </Toolbar>
     <DataTable :value="items" :reordableColumns="true" @rowReorder="onRowReorder" v-model:selection="selectedItems"
-      :metaKeySelection="false" editMode="cell" @cell-edit-complete="onCellEditComplete" :pt="{
+      :metaKeySelection="false" editMode="cell" @cell-edit-complete="onCellEditComplete"
+      :rowStyle="setEquippedItemStyle"
+      @cell-edit-init="(data)=> {if (data.field === 'equipped') data.data.equipped = !data.data.equipped}"
+      :pt="{
         table: { style: 'min-width: 50rem' },
         column: {
           bodycell: ({ state }) => ({
@@ -96,19 +122,23 @@ watch(() => props.items, () => {
       <Column v-if="!props.readonly" rowReorder headerStyle="width: 3rem" />
       <Column v-if="!props.readonly" selectionMode="multiple" headerStyle="width: 3rem" />
       <Column v-for="col, id of itemColumns" :key="id" :field="col.field" :header="col.header"
-        :style="col.field === 'description' ? 'width: 75%' : col.field === 'name' ? 'width: 20%' : 'width: 5%'">
+        :style="col.field === 'description' ? 'width: 70%' : col.field === 'name' ? 'width: 20%' : 'width: 5%'">
         <template #body="{ data, field }">
-          <div :style="{ 'max-width': field === 'description' ? '20rem' : '5rem', 'flex-grow': '1', 'overflow-wrap': 'break-word'}">
+          <Checkbox v-if="field === 'equipped'"  readonly v-model="data[field]" :binary="true" />
+          <div v-else :style="{ 'max-width': field === 'description' ? '20rem' : '5rem', 'flex-grow': '1', 'overflow-wrap': 'break-word'}">
             {{ data[field] }}
           </div>
         </template>
         <template v-if="!props.readonly" #editor="{ data, field }">
-          <template v-if="field === 'level'">
-            <InputNumber v-model="data[field]" showButtons buttonLayout="vertical" style="width: 4rem" :min="0"
+          <template v-if="field === 'amount'">
+            <InputNumber v-model="data[field]" showButtons :min="0"
               autofocus />
           </template>
           <template v-else-if="field === 'description'">
             <Textarea v-model="data[field]" :rows="5" :cols="50" />
+          </template>
+          <template v-else-if="field === 'equipped'">
+            <Checkbox v-model="data[field]" :binary="true" />
           </template>
           <template v-else>
             <InputText v-model="data[field]" autofocus />
@@ -133,6 +163,10 @@ watch(() => props.items, () => {
     <div class="field">
       <label for="description">Description</label>
       <Textarea id="description" v-model="newItem.description" required="true" rows="3" cols="20" />
+    </div>
+    <div class="field flex mt-5">
+      <label for="equipped">Equipped</label>
+      <Checkbox class="ml-2" v-model="newItem.equipped" :binary="true" />
     </div>
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" text @click="hideItemDialog" />

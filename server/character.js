@@ -1,5 +1,5 @@
 import express from 'express'
-
+import service from './service/service.js';
 import prisma from '../prisma/prisma.js'
 import { authenticateToken } from './token.js'
 
@@ -54,105 +54,127 @@ router.post('/update', authenticateToken, async (req, res) => {
   }
 })
 
-// router.get('/created', authenticateToken, async (req, res) => {
-//   try {
-//     const user = await prisma.user.findUnique({
-//       where: {
-//         id: req.user.id
-//       },
-//       include: {
-//         games: {
-//           include: {
-//             players: true
-//           }
-//         }
-//       }
-//     })
+router.post('/transfer/items', authenticateToken, async (req, res) => {
+  try {
+    const itemsToTransfer = req.body.data.items
+    console.log('req.body.data', req.body.data)
 
-//     const userGames = user.games
-//     userGames.forEach(e => {
-//       e.gameData = JSON.parse(e.gameData)
-//     })
+    const currentGame = await prisma.game.findUnique({
+      where: {
+        id: req.body.data.currentGameId
+      },
+      include: {
+        characters: true,
+      }
+    })
+    if (req.body.data.creatorId !== currentGame.creatorId) throw({message: 'bad request'})
+    console.log('currentGame',currentGame)
 
-//     res.json({ userGames })
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({ error: error.message });
-//   }
-// })
+    let sourceCharacter = {}
+    let targetCharacter = {}
+    currentGame.characters.forEach(e => {
+      if (e.id === req.body.data.sourceId) sourceCharacter = e
+      if (e.id === req.body.data.targetId) targetCharacter = e
+    })
+    console.log('sourceCharacter',sourceCharacter)
+    console.log('targetCharacter',targetCharacter)
+    sourceCharacter.charData = JSON.parse(sourceCharacter.charData)
+    targetCharacter.charData = JSON.parse(targetCharacter.charData)
+    const {
+      allowTransfer, 
+      updatedSourceItems, 
+      updatedTargetItems
+    } = service.transferItems(sourceCharacter.charData.items, itemsToTransfer, targetCharacter.charData.items)
+    
+    console.log('result', allowTransfer, updatedSourceItems, updatedTargetItems)
+    if (!allowTransfer) throw({message: 'bad request'})
+    sourceCharacter.charData.items = updatedSourceItems
+    targetCharacter.charData.items = updatedTargetItems
+    
+    const updatedSourceCharacter = await prisma.character.update({
+      where: {
+        id: sourceCharacter.id
+      },
+      data: {
+        charData: JSON.stringify(sourceCharacter.charData)
+      }
+    })
+    const updatedTargetCharacter = await prisma.character.update({
+      where: {
+        id: targetCharacter.id
+      },
+      data: {
+        charData: JSON.stringify(targetCharacter.charData)
+      }
+    })
+    // updatedCharacter.charData = JSON.parse(updatedCharacter.charData)
+    res.json({ source: updatedSourceCharacter, target: updatedTargetCharacter })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: error.message });
+  }
+})
 
+router.post('/transfer/shared', authenticateToken, async (req, res) => {
+  try {
+    const itemsToTransfer = req.body.data.items
+    console.log('req.body.data', req.body.data)
 
+    const currentGame = await prisma.game.findUnique({
+      where: {
+        id: req.body.data.currentGameId
+      },
+      include: {
+        characters: true,
+      }
+    })
+    if (req.body.data.creatorId !== currentGame.creatorId) throw({message: 'bad request'})
+    console.log('currentGame',currentGame)
 
-// router.post('/update/players', authenticateToken, async (req, res) => {
-//   console.log(req.body.game)
-//   const players = req.body.game.players.map(player => { 
-//     return { id: player.id }
-//   })
-//   console.log(players)
-
-//   try {
-//     const updatedGame = await prisma.game.update({
-//       where: {
-//         id: req.body.game.id
-//       },
-//       data: {
-//         players: {
-//           connect: players
-//         }
-//       },
-//       include: {
-//         players: {
-//           select: {
-//             id: true,
-//             username:true,
-//             userId: true
-//           }
-//         }
-//       }
-//     })
-//     updatedGame.gameData = JSON.parse(updatedGame.gameData)
-//     console.log("updatedGame", updatedGame)
-//     res.json({ updatedGame })
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({ error: error.message });
-//   }
-// })
-
-// router.post('/remove/player', authenticateToken, async (req, res) => {
-//   console.log(req.body.game.players)
-//   const players = req.body.game.players.map(player => { 
-//     return { id: player.id }
-//   })
-//   console.log(players)
-
-//   try {
-//     const updatedGame = await prisma.game.update({
-//       where: {
-//         id: req.body.game.id
-//       },
-//       data: {
-//         players: {
-//           disconnect: players
-//         }
-//       },
-//       include: {
-//         players: {
-//           select: {
-//             id: true,
-//             username:true,
-//             userId: true
-//           }
-//         }
-//       }
-//     })
-//     updatedGame.gameData = JSON.parse(updatedGame.gameData)
-//     res.json({ updatedGame })
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({ error: error.message });
-//   }
-// })
+    let sourceCharacter = {}
+    let targetCharacter = {}
+    currentGame.characters.forEach(e => {
+      if (e.id === req.body.data.sourceId) sourceCharacter = e
+      if (e.id === req.body.data.targetId) targetCharacter = e
+    })
+    console.log('sourceCharacter',sourceCharacter)
+    console.log('targetCharacter',targetCharacter)
+    sourceCharacter.charData = JSON.parse(sourceCharacter.charData)
+    targetCharacter.charData = JSON.parse(targetCharacter.charData)
+    const {
+      allowTransfer, 
+      updatedSourceItems, 
+      updatedTargetItems
+    } = service.transferItems(sourceCharacter.charData.items, itemsToTransfer, targetCharacter.charData.items)
+    
+    console.log('result', allowTransfer, updatedSourceItems, updatedTargetItems)
+    if (!allowTransfer) throw({message: 'bad request'})
+    sourceCharacter.charData.items = updatedSourceItems
+    targetCharacter.charData.items = updatedTargetItems
+    
+    const updatedSourceCharacter = await prisma.character.update({
+      where: {
+        id: sourceCharacter.id
+      },
+      data: {
+        charData: JSON.stringify(sourceCharacter.charData)
+      }
+    })
+    const updatedTargetCharacter = await prisma.character.update({
+      where: {
+        id: targetCharacter.id
+      },
+      data: {
+        charData: JSON.stringify(targetCharacter.charData)
+      }
+    })
+    // updatedCharacter.charData = JSON.parse(updatedCharacter.charData)
+    res.json({ updatedSourceCharacter, updatedTargetCharacter })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: error.message });
+  }
+})
 
 router.post('/delete', authenticateToken, async (req, res) => {
   try {
