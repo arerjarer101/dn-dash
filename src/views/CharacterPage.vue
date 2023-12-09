@@ -1,11 +1,15 @@
 <script setup>
 import axios from 'axios';
-import { inject, ref, toRaw } from 'vue';
+import { computed, inject, ref, toRaw } from 'vue';
 import { useConfirm } from "primevue/useconfirm";
 import SkillList from './components/SkillsList.vue'
 import InventoryList from './components/InventoryList.vue'
 import EffectList from './components/EffectList.vue'
 import AbilityList from './components/AbilityList.vue'
+import { useGameStore } from '../stores/GameStore';
+
+const gameStore = useGameStore();
+
 
 const toast = inject('toast')
 const apiURL = import.meta.env.VITE_API_URL
@@ -95,7 +99,7 @@ async function updateCharacter() {
     const updatedCharacter = res.data.updatedCharacter
     console.log(updatedCharacter)
     toast.add({
-      severity: 'success', summary: 'Deleted', detail: `Character ${updatedCharacter.name} was updated!`, life: 3000
+      severity: 'success', summary: 'Updated', detail: `Character ${updatedCharacter.name} was updated!`, life: 3000
     });
   }).catch(error => {
     console.log(error.message)
@@ -128,6 +132,9 @@ function onAbilitiesUpdated(updatedAbilities) {
 </script>
 
 <template>
+  <!-- <div>{{gameStore.currentCharacter}}</div> -->
+  <!-- <div>{{gameStore.currentCharData}}</div> -->
+
   <div v-if="!props.readonly" class="surface-section border-bottom-1 border-noround-bottom surface-border xl:sticky lg:sticky md:relative sm:relative z-4" style="height: 6.5rem; top: 5rem;">
     <Toolbar class="surface-section border-none xl:sticky lg:sticky md:relative sm:relative z-4" style="top: 6.5rem; ">
       <template #start>
@@ -197,7 +204,7 @@ function onAbilitiesUpdated(updatedAbilities) {
           <label for="durability">Durability</label>
         </div>
       </Fieldset>
-      <InventoryList :readonly="props.readonly" :items="newCharData.items" @update-items="onItemsUpdated"></InventoryList>
+      <InventoryList :readonly="props.readonly" @update-items="onItemsUpdated"></InventoryList>
 
       <EffectList :readonly="props.readonly" :effects="newCharData.effects" @update-effects="onEffectsUpdated"></EffectList>
     </SplitterPanel>

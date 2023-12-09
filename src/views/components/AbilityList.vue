@@ -1,12 +1,14 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
+import { useGameStore } from '../../stores/GameStore';
 
+const gameStore = useGameStore();
 const props = defineProps(['readonly','abilities'])
 const emit = defineEmits(['updateAbilities'])
 
-const abilities = ref(JSON.parse(JSON.stringify(props.abilities)))
-if (!abilities.value) abilities.value = []
+// const abilities = ref(JSON.parse(JSON.stringify(props.abilities)))
+if (!gameStore.currentCharData.abilities) gameStore.currentCharData.abilities = []
 
 const newAbility = ref()
 const abilityDialog = ref(false)
@@ -27,8 +29,8 @@ const addNewAbility = () => {
   submittedAbility.value = true;
 
   if (newAbility.value.name.trim()) {
-    abilities.value.push(newAbility.value);
-    emit('updateAbilities', abilities.value)
+    gameStore.currentCharData.abilities.push(newAbility.value);
+    emit('updateAbilities', gameStore.currentCharData.abilities)
     abilityDialog.value = false;
     newAbility.value = {};
   }
@@ -37,13 +39,13 @@ const confirmDeleteSelected = () => {
   deleteAbilitiesDialog.value = true;
 };
 const deleteSelectedAbilities = () => {
-  abilities.value = abilities.value.filter(val => !selectedAbilities.value.includes(val));
+  gameStore.currentCharData.abilities = gameStore.currentCharData.abilities.filter(val => !selectedAbilities.value.includes(val));
   deleteAbilitiesDialog.value = false;
   selectedAbilities.value = null;
-  emit('updateAbilities', abilities.value)
+  emit('updateAbilities', gameStore.currentCharData.abilities)
 };
 
-if (!abilities.value) abilities.value = []
+if (!gameStore.currentCharData.abilities) gameStore.currentCharData.abilities = []
 const abilityColumns = ref([
   { field: 'name', header: 'Ability' },
   { field: 'tag', header: 'Type' },
@@ -78,16 +80,16 @@ const onCellEditComplete = (event) => {
   let { data, newValue, field } = event;
 
   data[field] = newValue;
-  emit('updateAbilities', abilities.value)
+  emit('updateAbilities', gameStore.currentCharData.abilities)
 };
 
 const onRowReorder = (event) => {
-  abilities.value = event.value
-  emit('updateAbilities', abilities.value)
+  gameStore.currentCharData.abilities = event.value
+  emit('updateAbilities', gameStore.currentCharData.abilities)
 }
 
 watch(() => props.abilities, () => {
-  abilities.value = JSON.parse(JSON.stringify(props.abilities))
+  gameStore.currentCharData.abilities = JSON.parse(JSON.stringify(props.abilities))
 }, { deep: true })
 
 
@@ -102,7 +104,7 @@ watch(() => props.abilities, () => {
           :disabled="!selectedAbilities || !selectedAbilities.length" />
       </template>
     </Toolbar>
-    <DataTable v-model:filters="filters" :value="abilities" :reordableColumns="true" @rowReorder="onRowReorder"
+    <DataTable v-model:filters="filters" :value="gameStore.currentCharData.abilities" :reordableColumns="true" @rowReorder="onRowReorder"
       v-model:selection="selectedAbilities" :metaKeySelection="false" editMode="cell" filterDisplay="row"
       @cell-edit-complete="onCellEditComplete" :pt="{
         table: { style: 'min-width: 50rem' },

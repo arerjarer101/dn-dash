@@ -73,11 +73,11 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
   if (to.meta.freeAccess === true) return true
 
-  const arrPathTo = to.fullPath.split('/')
-  const arrPathFrom = from.fullPath.split('/')
-  if (arrPathTo.length > 2 &&  ['created-games', 'participated-games'].includes(arrPathTo[1])) {
-    if(localStorage.currentGame === '') router.push(arrPathFrom[1])
-  }
+  // const arrPathTo = to.fullPath.split('/')
+  // const arrPathFrom = from.fullPath.split('/')
+  // if (arrPathTo.length > 2 &&  ['created-games', 'participated-games'].includes(arrPathTo[1])) {
+  //   if(localStorage.currentGame === '') router.push(arrPathFrom[1])
+  // }
 
   const apiURL = import.meta.env.VITE_API_URL
   const userStatus = {}
@@ -89,7 +89,7 @@ router.beforeEach(async (to, from) => {
     headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
   }).then(res => {
     userStatus.loggedIn = res.data
-    console.log('Logged In status', userStatus.loggedIn)
+    console.log('Logged In status', res.data)
   }).catch((error) => {
     console.log(error)
   })

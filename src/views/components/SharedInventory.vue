@@ -1,7 +1,9 @@
 <script setup>
 import axios from 'axios';
 import { onMounted, ref, inject, toRaw, reactive } from 'vue';
+import { useGameStore } from '../../stores/GameStore';
 
+const gameStore = useGameStore();
 const toast = inject('toast')
 const apiURL = import.meta.env.VITE_API_URL
 const props = defineProps(['readonly', 'currentGameCharacters'])
@@ -9,6 +11,10 @@ const emit = defineEmits(['itemsTransferred'])
 console.log(props)
 
 const characters = ref()
+const mode = ref({
+  source: '',
+  target: ''
+})
 
 const selectedItems = reactive({
   left: [],
@@ -26,7 +32,7 @@ async function getCharactersWithItems() {
 
   await axios({
     method: 'get',
-    url: `${apiURL}/game/${JSON.parse(localStorage.currentGame).id}/characters/parsed`,
+    url: `${apiURL}/game/${gameStore.currentGame.id}/characters/parsed`,
     // params: { refreshToken: localStorage.refreshToken },
     headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
   }).then(res => {
@@ -40,8 +46,8 @@ async function getCharactersWithItems() {
 
 async function transferItems(transfer) {
   const data = transfer
-  data.currentGameId = JSON.parse(localStorage.currentGame).id
-  data.creatorId = JSON.parse(localStorage.currentGame).creatorId
+  data.currentGameId = gameStore.currentGame.id
+  data.creatorId = gameStore.currentGame.creatorId
   console.log(data)
 
   await axios({
@@ -53,8 +59,8 @@ async function transferItems(transfer) {
     toast.add({ severity: 'success', summary: 'Transferred', detail: 'Selected items were transferred', life: 3000 })
     console.log('Items Transferred',res.data)
     emit('itemsTransferred')
-    selectedCharacter.value.left.charData = JSON.parse(res.source.charData) 
-    selectedCharacter.value.right.charData = JSON.parse(res.source.charData) 
+    selectedCharacter.value[mode.value.source] = res.data.source
+    selectedCharacter.value[mode.value.target] = res.data.target
   }).then(async () => {
     // await getCharactersWithItems()
   }).catch((error) => {
@@ -63,6 +69,9 @@ async function transferItems(transfer) {
 }
 
 function transfer(source, target) {
+  mode.value.source = source;
+  mode.value.target = target;
+
   transferParams.value = {
     sourceId: selectedCharacter.value[source].id,
     targetId: selectedCharacter.value[target].id,
@@ -84,7 +93,7 @@ async function transferSelectedItems() {
 };
 
 onMounted(async () => {
-  await getCharactersWithItems()
+  // await getCharactersWithItems()
 })
 
 </script>
@@ -92,13 +101,13 @@ onMounted(async () => {
 <template>
   <div class="flex align-items-stretch">
     <div class="flex-1 p-3">
-      <Dropdown v-model="selectedCharacter.left" :options="selectedCharacter.right.id ? characters.filter(e => e.id !== selectedCharacter.right.id) : characters" optionLabel="name"  dataKey="id"
+      <Dropdown v-model="selectedCharacter.left" :options="selectedCharacter.right.id ? gameStore.currentGame.characters.filter(e => e.id !== selectedCharacter.right.id) : gameStore.currentGame.characters" optionLabel="name"  dataKey="id"
         placeholder="Select a Character" class="w-full mb-3" :pt="{
           root: {
             draggable: true
           }
         }" />
-      <Listbox v-if="selectedCharacter.left.id" multiple v-model="selectedItems.left" :options="selectedCharacter.left.charData.items" optionLabel="name" class="w-full mb-3" :metaKeySelection="true" :pt="{
+      <Listbox v-if="selectedCharacter.left.id" multiple v-model="selectedItems.left" :options="JSON.parse(selectedCharacter.left.charData).items" optionLabel="name" class="w-full mb-3" :metaKeySelection="true" :pt="{
         item: {
           draggable: true,
         }
@@ -114,9 +123,9 @@ onMounted(async () => {
         @click="() => {transfer('left', 'right')}"></Button>
     </div>
     <div class="flex-1 p-3">
-      <Dropdown v-model="selectedCharacter.right" :options="selectedCharacter.left.id ? characters.filter(e => e.id !== selectedCharacter.left.id) : characters" optionLabel="name"  dataKey="id"
+      <Dropdown v-model="selectedCharacter.right" :options="selectedCharacter.left.id ? gameStore.currentGame.characters.filter(e => e.id !== selectedCharacter.left.id) : gameStore.currentGame.characters" optionLabel="name"  dataKey="id"
         placeholder="Select a Character" class="w-full mb-3" />
-      <Listbox v-if="selectedCharacter.right.id" multiple v-model="selectedItems.right" :options="selectedCharacter.right.charData.items" optionLabel="name" class="w-full mb-3" :pt="{
+      <Listbox v-if="selectedCharacter.right.id" multiple v-model="selectedItems.right" :options="JSON.parse(selectedCharacter.right.charData).items" optionLabel="name" class="w-full mb-3" :pt="{
         item: {
           draggable: true
         }

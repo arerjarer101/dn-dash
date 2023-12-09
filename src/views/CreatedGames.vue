@@ -2,11 +2,15 @@
 import { onBeforeMount, ref, inject } from 'vue'
 import axios from 'axios';
 import { useConfirm } from "primevue/useconfirm";
+import { useGameStore } from '../stores/GameStore';
+
+const gameStore = useGameStore();
 
 const toast = inject('toast')
 const apiURL = import.meta.env.VITE_API_URL
 
-localStorage.currentGame = ''
+localStorage.currentGameId = ''
+// gameStore.currentGame = {}
 
 const users = ref()
 const confirm = useConfirm();
@@ -115,7 +119,8 @@ async function deleteGame(id) {
 }
 
 function open(game) {
-  localStorage.currentGame = JSON.stringify(game)
+  localStorage.currentGameId = game.id
+  gameStore.currentGame = game
 }
 
 onBeforeMount(() => {
@@ -125,12 +130,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <!-- <GamePage v-if="showGame" 
-    :currentGame="currentGame" 
-    @updateGameData="(newGameData, gameId) => {updateGameData(newGameData, gameId)}" 
-    @goBack="gameSelected = false; currentGame = ''"
-  ></GamePage> -->
-  
+
   <div>
     <Card>
       <template #title>Create a game</template>

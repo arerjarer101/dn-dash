@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia';
 import App from './App.vue'
 import router from './router'
 
@@ -32,12 +33,13 @@ import SplitterPanel from 'primevue/splitterpanel';
 import Tag from 'primevue/tag';
 import Textarea from 'primevue/textarea';
 import Toolbar from 'primevue/toolbar';
+import Skeleton from 'primevue/skeleton';
 
 import '@/assets/styles.scss';
 
 const app = createApp(App);
 
-
+app.use(createPinia())
 app.use(router)
 app.use(PrimeVue, {ripple: true});
 app.use(ToastService);
@@ -71,5 +73,6 @@ app.component('SplitterPanel', SplitterPanel);
 app.component('Tag', Tag);
 app.component('Textarea', Textarea);
 app.component('Toolbar', Toolbar);
+app.component('Skeleton', Skeleton);
 
 app.mount('#app')

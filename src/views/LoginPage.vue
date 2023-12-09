@@ -5,7 +5,9 @@ import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
+import { useGameStore } from '../stores/GameStore';
 
+const gameStore = useGameStore();
 const toast = useToast();
 const router = useRouter()
 const route = useRoute()
@@ -47,7 +49,6 @@ async function onLogin() {
 		username: username.value,
 		password: password.value
 	}).then(res => {
-		console.log(res)
 		if (res.data && res.data.accessToken && res.data.refreshToken) {
 			localStorage.refreshToken = res.data.refreshToken
 			localStorage.accessToken = res.data.accessToken
@@ -104,9 +105,7 @@ const logoUrl = computed(() => {
 		<div 
 			class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden"
 			style="position: absolute; top: 0px; background-color: transparent !important;">
-			<Toast :pt="{
-				root: { style: 'margin-top:-5.5rem' }
-			}"></Toast>
+			<Toast></Toast>
 			<div class="flex flex-column align-items-center justify-content-center">
 				<div :class="[layoutConfig.darkTheme.value ? 'logo-dark' : 'logo-white', 'logo']">
 					<img :src="logoUrl" alt="Dn-dash logo"

@@ -31,10 +31,6 @@ async function updateToken() {
     headers: { 'Authorization': `Bearer ${localStorage.accessToken}` } 
   }).then((res) => {
     localStorage.accessToken = res.data.accessToken
-    // console.log('updated accessToken:', localStorage.accessToken)
-    // toast.add({
-    //   severity: 'success', summary: `Success!`, detail: `Access token updated`, life: 3000
-    // });
     isAuthenticated = true
   }).catch((error) => {
     toast.add({

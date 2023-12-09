@@ -1,10 +1,8 @@
 <script setup>
-import { useLayout } from '@/layout/composables/layout';
+// import { useLayout } from '@/layout/composables/layout';
 import { computed } from 'vue';
 
-const { layoutConfig } = useLayout();
-console.log('layoutConfig', layoutConfig.darkTheme.value)
-
+// const { layoutConfig } = useLayout();
 const logoUrl = computed(() => {
 	return `/layout/images/logo.svg`;
 });

@@ -1,13 +1,15 @@
 <script setup>
 import { ref, inject, watch } from 'vue';
+import { useGameStore } from '../../stores/GameStore';
 
+const gameStore = useGameStore();
 const toast = inject('toast')
 
 const props = defineProps(['readonly','skills'])
 const emit = defineEmits(['updateSkills'])
 
-const skills = ref(JSON.parse(JSON.stringify(props.skills)))
-if (!skills.value) skills.value = []
+// const skills = ref(JSON.parse(JSON.stringify(props.skills)))
+if (!gameStore.currentCharData.skills) gameStore.currentCharData.skills = []
 
 const newSkill = ref()
 const skillDialog = ref(false)
@@ -28,10 +30,10 @@ const addNewSkill = () => {
   submittedSkill.value = true;
 
   if (newSkill.value.name.trim()) {
-    skills.value.push(newSkill.value);
+    gameStore.currentCharData.skills.push(newSkill.value);
     toast.add({ severity: 'success', summary: 'Successful', detail: 'New skill added!', life: 3000 });
-    console.log('emit updateSkills', skills.value)
-    emit('updateSkills', skills.value)
+    console.log('emit updateSkills', gameStore.currentCharData.skills)
+    emit('updateSkills', gameStore.currentCharData.skills)
     skillDialog.value = false;
     newSkill.value = {};
   }
@@ -40,15 +42,15 @@ const confirmDeleteSelected = () => {
   deleteSkillsDialog.value = true;
 };
 const deleteSelectedSkills = () => {
-  skills.value = skills.value.filter(val => !selectedSkills.value.includes(val));
+  gameStore.currentCharData.skills = gameStore.currentCharData.skills.filter(val => !selectedSkills.value.includes(val));
   deleteSkillsDialog.value = false;
   selectedSkills.value = null;
   toast.add({ severity: 'success', summary: 'Deleted', detail: 'Selected skills deleted', life: 3000 });
-  console.log('emit updateSkills', skills.value)
-  emit('updateSkills', skills.value)
+  console.log('emit updateSkills', gameStore.currentCharData.skills)
+  emit('updateSkills', gameStore.currentCharData.skills)
 };
 
-if (!skills.value) skills.value = []
+if (!gameStore.currentCharData.skills) gameStore.currentCharData.skills = []
 const skillColumns = ref([
   { field: 'name', header: 'Skill' },
   { field: 'level', header: 'Level' },
@@ -59,18 +61,18 @@ const onCellEditComplete = (event) => {
   let { data, newValue, field } = event;
 
   data[field] = newValue;
-  console.log('emit updateSkills', skills.value)
-  emit('updateSkills', skills.value)
+  console.log('emit updateSkills', gameStore.currentCharData.skills)
+  emit('updateSkills', gameStore.currentCharData.skills)
 };
 
 const onRowReorder = (event) => {
-  skills.value = event.value
-  console.log('emit updateSkills', skills.value)
-  emit('updateSkills', skills.value)
+  gameStore.currentCharData.skills = event.value
+  console.log('emit updateSkills', gameStore.currentCharData.skills)
+  emit('updateSkills', gameStore.currentCharData.skills)
 }
 
 watch(() => props.skills, () => {
-  skills.value = JSON.parse(JSON.stringify(props.skills))
+  gameStore.currentCharData.skills = JSON.parse(JSON.stringify(props.skills))
 }, { deep: true })
 
 
@@ -85,7 +87,7 @@ watch(() => props.skills, () => {
           :disabled="!selectedSkills || !selectedSkills.length" />
       </template>
     </Toolbar>
-    <DataTable :value="skills" :reordableColumns="true" @rowReorder="onRowReorder" v-model:selection="selectedSkills"
+    <DataTable :value="gameStore.currentCharData.skills" :reordableColumns="true" @rowReorder="onRowReorder" v-model:selection="selectedSkills"
       :metaKeySelection="false" editMode="cell" @cell-edit-complete="onCellEditComplete" :pt="{
         table: { style: 'min-width: 50rem' },
         column: {

@@ -1,13 +1,15 @@
 <script setup>
 import { ref, inject, watch } from 'vue';
+import { useGameStore } from '../../stores/GameStore';
 
+const gameStore = useGameStore();
 const toast = inject('toast')
 
 const props = defineProps(['readonly', 'effects'])
 const emit = defineEmits(['updateEffects'])
 
-const effects = ref(JSON.parse(JSON.stringify(props.effects)))
-if (!effects.value) effects.value = []
+// const effects = ref(JSON.parse(JSON.stringify(props.effects)))
+if (!gameStore.currentCharData.effects) gameStore.currentCharData.effects = []
 
 const newEffects = ref()
 const effectDialog = ref(false)
@@ -28,10 +30,10 @@ const addNewEffects = () => {
   submittedEffects.value = true;
 
   if (newEffects.value.name.trim()) {
-    effects.value.push(newEffects.value);
+    gameStore.currentCharData.effects.push(newEffects.value);
     toast.add({ severity: 'success', summary: 'Successful', detail: 'New effect added!', life: 3000 });
-    console.log('emit updateEffects', effects.value)
-    emit('updateEffects', effects.value)
+    console.log('emit updateEffects', gameStore.currentCharData.effects)
+    emit('updateEffects', gameStore.currentCharData.effects)
     effectDialog.value = false;
     newEffects.value = {};
   }
@@ -40,15 +42,15 @@ const confirmDeleteSelected = () => {
   deleteEffectsDialog.value = true;
 };
 const deleteSelectedEffects = () => {
-  effects.value = effects.value.filter(val => !selectedEffects.value.includes(val));
+  gameStore.currentCharData.effects = gameStore.currentCharData.effects.filter(val => !selectedEffects.value.includes(val));
   deleteEffectsDialog.value = false;
   selectedEffects.value = null;
   toast.add({ severity: 'success', summary: 'Deleted', detail: 'Selected effects deleted', life: 3000 });
-  console.log('emit updateEffects', effects.value)
-  emit('updateEffects', effects.value)
+  console.log('emit updateEffects', gameStore.currentCharData.effects)
+  emit('updateEffects', gameStore.currentCharData.effects)
 };
 
-if (!effects.value) effects.value = []
+if (!gameStore.currentCharData.effects) gameStore.currentCharData.effects = []
 const effectColumns = ref([
   { field: 'name', header: 'Effect' },
   { field: 'description', header: 'Description' },
@@ -58,18 +60,18 @@ const onCellEditComplete = (event) => {
   let { data, newValue, field } = event;
   data[field] = newValue
 
-  console.log('emit updateEffects', effects.value)
-  emit('updateEffects', effects.value)
+  console.log('emit updateEffects', gameStore.currentCharData.effects)
+  emit('updateEffects', gameStore.currentCharData.effects)
 };
 
 const onRowReorder = (event) => {
-  effects.value = event.value
-  console.log('emit updateEffects', effects.value)
-  emit('updateEffects', effects.value)
+  gameStore.currentCharData.effects = event.value
+  console.log('emit updateEffects', gameStore.currentCharData.effects)
+  emit('updateEffects', gameStore.currentCharData.effects)
 }
 
 watch(() => props.effects, () => {
-  effects.value = JSON.parse(JSON.stringify(props.effects))
+  gameStore.currentCharData.effects = JSON.parse(JSON.stringify(props.effects))
 }, { deep: true })
 
 
@@ -84,7 +86,7 @@ watch(() => props.effects, () => {
           :disabled="!selectedEffects || !selectedEffects.length" />
       </template>
     </Toolbar>
-    <DataTable :value="effects" :reordableColumns="true" @rowReorder="onRowReorder" v-model:selection="selectedEffects"
+    <DataTable :value="gameStore.currentCharData.effects" :reordableColumns="true" @rowReorder="onRowReorder" v-model:selection="selectedEffects"
       :metaKeySelection="false" editMode="cell" @cell-edit-complete="onCellEditComplete" :pt="{
         table: { style: 'min-width: 50rem' },
         column: {

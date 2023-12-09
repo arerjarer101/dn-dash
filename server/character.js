@@ -169,7 +169,7 @@ router.post('/transfer/shared', authenticateToken, async (req, res) => {
       }
     })
     // updatedCharacter.charData = JSON.parse(updatedCharacter.charData)
-    res.json({ updatedSourceCharacter, updatedTargetCharacter })
+    res.json({ source:updatedSourceCharacter, target:updatedTargetCharacter })
   } catch (error) {
     console.log(error)
     res.status(500).json({ error: error.message });

@@ -1,6 +1,9 @@
 <script setup>
 import axios from 'axios';
-import { reactive, ref, inject } from 'vue';
+import { ref, inject } from 'vue';
+import { useGameStore } from '../stores/GameStore';
+
+const gameStore = useGameStore();
 
 const toast = inject('toast')
 const apiURL = import.meta.env.VITE_API_URL
@@ -61,6 +64,8 @@ async function addCharacter(characterId) {
     });
 		console.log(res.data.updatedGame)
     localStorage.currentGame = JSON.stringify(res.data.updatedGame)
+    gameStore.currentGame = res.data.updatedGame
+    gameStore.setCurrentCharacter(res.data.updatedGame.characters.length-1)
   }).catch(error => {
     console.log(error.message)
     toast.add({

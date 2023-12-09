@@ -1,13 +1,17 @@
 <script setup>
-import { ref, inject, watch } from 'vue';
+import { ref, inject } from 'vue';
+import { useGameStore } from '../../stores/GameStore';
+
+const gameStore = useGameStore();
 
 const toast = inject('toast')
 
-const props = defineProps(['readonly', 'items'])
+const props = defineProps(['readonly'])
 const emit = defineEmits(['updateItems'])
 
-const items = ref(JSON.parse(JSON.stringify(props.items)))
-if (!items.value) items.value = []
+// const items = ref(JSON.parse(JSON.stringify(props.items)))
+// const items = ref(gameStore.currentCharData.items)
+if (!gameStore.currentCharData.items) gameStore.currentCharData.items = []
 
 const newItem = ref()
 const itemDialog = ref(false)
@@ -35,10 +39,10 @@ const addNewItem = () => {
   }
 
   if (newItem.value.name.trim()) {
-    items.value.push(newItem.value);
+    gameStore.currentCharData.items.push(newItem.value);
     toast.add({ severity: 'success', summary: 'Successful', detail: 'New item added!', life: 3000 });
-    console.log('emit updateItems', items.value)
-    emit('updateItems', items.value)
+    console.log('emit updateItems', gameStore.currentCharData.items)
+    emit('updateItems', gameStore.currentCharData.items)
     itemDialog.value = false;
     newItem.value = {};
   }
@@ -47,15 +51,15 @@ const confirmDeleteSelected = () => {
   deleteItemsDialog.value = true;
 };
 const deleteSelectedItems = () => {
-  items.value = items.value.filter(val => !selectedItems.value.includes(val));
+  gameStore.currentCharData.items = gameStore.currentCharData.items.filter(val => !selectedItems.value.includes(val));
   deleteItemsDialog.value = false;
   selectedItems.value = null;
   toast.add({ severity: 'success', summary: 'Deleted', detail: 'Selected items deleted', life: 3000 });
-  console.log('emit updateItems', items.value)
-  emit('updateItems', items.value)
+  console.log('emit updateItems', gameStore.currentCharData.items)
+  emit('updateItems', gameStore.currentCharData.items)
 };
 
-if (!items.value) items.value = []
+if (!gameStore.currentCharData.items) gameStore.currentCharData.items = []
 const itemColumns = ref([
   { field: 'name', header: 'Item' },
   { field: 'amount', header: 'Amount' },
@@ -70,18 +74,18 @@ const onCellEditComplete = (event) => {
     return;
   }
   data[field] = newValue
-  console.log('emit updateItems', items.value)
-  emit('updateItems', items.value)
+  console.log('emit updateItems', gameStore.currentCharData.items)
+  emit('updateItems', gameStore.currentCharData.items)
 };
 
 const onRowReorder = (event) => {
-  items.value = event.value
-  console.log('emit updateItems', items.value)
-  emit('updateItems', items.value)
+  gameStore.currentCharData.items = event.value
+  console.log('emit updateItems', gameStore.currentCharData.items)
+  emit('updateItems', gameStore.currentCharData.items)
 }
 
 const isNameDuplicate = (name) => {
-  return items.value.findIndex(e => e.name === name) >= 0
+  return gameStore.currentCharData.items.findIndex(e => e.name === name) >= 0
 }
 
 const setEquippedItemStyle = (data) => {
@@ -90,11 +94,6 @@ const setEquippedItemStyle = (data) => {
   if(data.equipped) style = `background-image: linear-gradient(to right, ${color}, color-mix(in srgb, ${color} 30%, transparent) 5%, color-mix(in srgb, ${color} 1%, transparent) 10%, color-mix(in srgb, ${color} 2%, transparent) 75%, color-mix(in srgb, ${color} 20%, transparent) 90%, ${color});`
   return style
 }
-
-watch(() => props.items, () => {
-  if(props.items) items.value = JSON.parse(JSON.stringify(props.items))
-}, { deep: true })
-
 
 </script>
 
@@ -107,7 +106,7 @@ watch(() => props.items, () => {
           :disabled="!selectedItems || !selectedItems.length" />
       </template>
     </Toolbar>
-    <DataTable :value="items" :reordableColumns="true" @rowReorder="onRowReorder" v-model:selection="selectedItems"
+    <DataTable :value="gameStore.currentCharData.items" :reordableColumns="true" @rowReorder="onRowReorder" v-model:selection="selectedItems"
       :metaKeySelection="false" editMode="cell" @cell-edit-complete="onCellEditComplete"
       :rowStyle="setEquippedItemStyle"
       @cell-edit-init="(data)=> {if (data.field === 'equipped') data.data.equipped = !data.data.equipped}"
