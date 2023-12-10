@@ -1,28 +1,24 @@
 <script setup>
 import { useLayout } from '../layout/composables/layout.js';
-import { ref, computed, onMounted, inject } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
+import { useGameStore } from '../stores/GameStore';
 
+const gameStore = useGameStore();
 const toast = useToast();
-
 const router = useRouter()
 const route = useRoute()
 
 localStorage.previousPath = 'login'
 
 const backgroundImg = ref(getRandomImg())
-
 const { layoutConfig } = useLayout();
-// console.log(layoutConfig())
-
 const username = ref('');
-
 const password = ref('');
-const apiURL = 'http://10.100.102.5:7070'
-// console.log(process.env)
+const apiURL = import.meta.env.VITE_API_URL
 
 onMounted(() => {
 	username.value = route.query.username
@@ -53,7 +49,6 @@ async function onLogin() {
 		username: username.value,
 		password: password.value
 	}).then(res => {
-		console.log(res)
 		if (res.data && res.data.accessToken && res.data.refreshToken) {
 			localStorage.refreshToken = res.data.refreshToken
 			localStorage.accessToken = res.data.accessToken
@@ -99,7 +94,7 @@ function onMousemove($event) {
 }
 
 const logoUrl = computed(() => {
-	return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
+	return `layout/images/logo.svg`;
 });
 
 </script>
@@ -110,9 +105,7 @@ const logoUrl = computed(() => {
 		<div 
 			class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden"
 			style="position: absolute; top: 0px; background-color: transparent !important;">
-			<Toast :pt="{
-				root: { style: 'margin-top:-5.5rem' }
-			}"></Toast>
+			<Toast></Toast>
 			<div class="flex flex-column align-items-center justify-content-center">
 				<div :class="[layoutConfig.darkTheme.value ? 'logo-dark' : 'logo-white', 'logo']">
 					<img :src="logoUrl" alt="Dn-dash logo"

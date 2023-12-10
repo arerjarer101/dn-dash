@@ -9,8 +9,7 @@ import { getThemeColors } from '../src/layout/composables/colors.js';
 
 const router = useRouter()
 const toast = useToast();
-const apiURL = 'http://10.100.102.5:7070'
-// const token = ref('')
+const apiURL = import.meta.env.VITE_API_URL
 let isAuthenticated = !!localStorage.refreshToken && !!localStorage.accessToken
 
 const intervalRefresh = setInterval(() => {
@@ -22,7 +21,7 @@ const intervalRefresh = setInterval(() => {
   }
 }, 10000) 
 
-if (!isAuthenticated) router.push('/' + (localStorage.previousPath || 'login'))
+if (!isAuthenticated) router.push('/login')
 
 async function updateToken() {
   await axios({
@@ -32,11 +31,6 @@ async function updateToken() {
     headers: { 'Authorization': `Bearer ${localStorage.accessToken}` } 
   }).then((res) => {
     localStorage.accessToken = res.data.accessToken
-    // token.value = res.data.accessToken
-    console.log('updated accessToken:', localStorage.accessToken)
-    toast.add({
-      severity: 'success', summary: `Success!`, detail: `Access token updated`, life: 3000
-    });
     isAuthenticated = true
   }).catch((error) => {
     toast.add({
@@ -60,10 +54,11 @@ function updateColors(defaultColor, activeColor) {
 }
 
 provide('colors', {colors, updateColors})
+provide('toast', toast)
 
 onMounted(() => {
 	if (localStorage.theme) {
-		changeTheme(localStorage.theme)
+		changeTheme(localStorage.theme, localStorage.mode)
 		const newColors = getThemeColors(localStorage.theme)
   	updateColors(newColors.defaultColor, newColors.activeColor)
 	}
@@ -79,6 +74,6 @@ onUnmounted(() => {
   <router-view />
 </template>
 
-<style scoped>
+<style>
 
 </style>

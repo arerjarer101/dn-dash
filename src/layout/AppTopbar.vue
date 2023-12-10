@@ -1,10 +1,11 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
+import { useRouter } from 'vue-router';
 // import { useRouter } from 'vue-router';
 
-const { layoutConfig, onMenuToggle } = useLayout();
-
+const { onMenuToggle } = useLayout();
+const router = useRouter()
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 // const router = useRouter();
@@ -17,9 +18,9 @@ onBeforeUnmount(() => {
 	unbindOutsideClickListener();
 });
 
-const logoUrl = computed(() => {
-	return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
-});
+// const logoUrl = computed(() => {
+// 	return `/layout/images/logo.svg`;
+// });
 
 // const onTopBarMenuButton = () => {
 // 	topbarMenuActive.value = !topbarMenuActive.value;
@@ -33,6 +34,10 @@ const logoUrl = computed(() => {
 // 		'layout-topbar-menu-mobile-active': topbarMenuActive.value
 // 	};
 // });
+
+const routeBack = () => {
+	router.back()
+}
 
 const bindOutsideClickListener = () => {
 	if (!outsideClickListener.value) {
@@ -61,16 +66,18 @@ const isOutsideClicked = (event) => {
 </script>
 
 <template>
-	<div class="layout-topbar">
-		<router-link to="/" class="layout-topbar-logo ">
+	<div class="layout-topbar surface-ground surface-border" style="height: 3rem; border-bottom: 1px solid; border-top: 1px solid">
+		<!-- <router-link to="/created-games" class="layout-topbar-logo ">
 			<div class="logo">
 				<img :src="logoUrl" alt="logo" />
 			</div>
-		</router-link>
+		</router-link> -->
 
-		<button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
+		<button class="ml-1 p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
 			<i class="pi pi-bars"></i>
 		</button>
+
+		<Button style="height: 2rem;" @click="routeBack" >Back</Button>
 
 		<!-- <button class="p-link layout-topbar-menu-button layout-topbar-button mr-6" @click="onTopBarMenuButton()">
 			<i class="pi pi-ellipsis-v"></i>
@@ -104,5 +111,9 @@ const isOutsideClicked = (event) => {
 
 .logo img {
 	filter: brightness(1.2) grayscale(20%) drop-shadow(0 0 0.7rem var(--primary-color));
+}
+
+.layout-menu-button {
+	margin-right: 2rem;
 }
 </style>

@@ -1,62 +1,65 @@
 <script setup>
-import { ref, onMounted, reactive } from 'vue'
+import { onBeforeMount, ref, inject } from 'vue'
 import axios from 'axios';
-import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
-import Toast from 'primevue/toast';
-import Password from 'primevue/password';
 
-const toast = useToast();
-const apiURL = 'http://10.100.102.5:7070'
-const user = ref('')
+const toast = inject('toast')
+const apiURL = import.meta.env.VITE_API_URL
 
-user.value = localStorage.user && JSON.parse(localStorage.user) 
+localStorage.currentGame = ''
 
-const headers = reactive({ 'Authorization': 'Bearer ' + localStorage.accessToken })
+const users = ref()
 
-onMounted(() => {
+const games = ref('')
 
-})
-
-async function updateUser() {
-  const newdata = user.value
-  // newdata.newpassword = newdata.newpassword || newdata.oldpassword
-  console.log('HEADERS:',headers)
+async function getUsers() {
   await axios({
-    method: 'post',
-    url: `${apiURL}/user/update`, 
-    data: { newdata }, 
-    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` } 
+    method: 'get',
+    url: `${apiURL}/user/list`,
+    params: { refreshToken: localStorage.refreshToken },
+    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
   }).then(res => {
-    toast.add({
-      severity: 'success', summary: `User ${res.data.user.username} updated`, detail: `Goodbye!`, life: 3000
-    });
-    localStorage.user = JSON.stringify(res.data.user)
-    console.log(res.message)
-    newdata.newpassword = ''
-    newdata.oldpassword = ''
-  }).catch(error => {
-    console.log(error.message)
-    toast.add({
-			severity: 'error', summary: 'An error occured when updating user data', detail: error.response.data.error, life: 10000
-		});
+    users.value = res.data
+    console.log('GOT USERS', users.value)
+  }).catch((error) => {
+    console.log(error)
   })
 }
 
+async function getParticipatedGames() {
+  await axios({
+    method: 'get',
+    url: `${apiURL}/game/participated`,
+    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
+  }).then(res => {
+    games.value = res.data.userGames
+  }).catch(error => {
+    console.log(error.message)
+  })
+}
+
+function open(game) {
+  localStorage.currentGame = JSON.stringify(game)
+}
+
+onBeforeMount(() => {
+  getParticipatedGames()
+  getUsers()
+})
 </script>
 
 <template>
-  <Card></Card>
-
+  <div>
+    <Card v-for="game in games" :key="game" class="mb-2">
+      <template #title>{{game.name}}</template>
+      <template #content >
+        <div>
+          <RouterLink :to="`/participated-games/${game.name}`" @click="open(game)"><Button class="mr-2">Open</Button></RouterLink>
+        </div>
+      </template>
+    </Card>
+  </div>
 </template>
 
 <style scoped>
-.block {
-  
-}
-.token {
-  max-width: inherit;
-  overflow: scroll;
-  word-wrap: break-word;
-}
+
 </style>

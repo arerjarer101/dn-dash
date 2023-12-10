@@ -3,11 +3,11 @@ import HomeView from '../views/HomeView.vue'
 import ProfileSettings from '../views/ProfileSettings.vue'
 import CreatedGames from '../views/CreatedGames.vue'
 import GamePage from '../views/GamePage.vue'
+import GameParticipated from '../views/GameParticipated.vue'
 import ParticipatedGames from '../views/ParticipatedGames.vue'
 import UiSettings from '../views/UiSettings.vue'
 import AppLayout from '@/layout/AppLayout.vue'
 import axios from 'axios'
-// import LoginPage from '../views/LoginPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,12 +37,18 @@ const router = createRouter({
         },
         {
           path: '/created-games/:gameId',
-          component: GamePage
+          name: 'game-page',
+          component: GamePage,
         },
         {
           path: '/participated-games',
-          component: ParticipatedGames
-        }
+          component: ParticipatedGames,
+        },
+        {
+          path: '/participated-games/:gameId',
+          name: 'game-participated',
+          component: GameParticipated,
+        },
       ]
     },
     {
@@ -67,7 +73,13 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
   if (to.meta.freeAccess === true) return true
 
-  const apiURL = 'http://10.100.102.5:7070'
+  // const arrPathTo = to.fullPath.split('/')
+  // const arrPathFrom = from.fullPath.split('/')
+  // if (arrPathTo.length > 2 &&  ['created-games', 'participated-games'].includes(arrPathTo[1])) {
+  //   if(localStorage.currentGame === '') router.push(arrPathFrom[1])
+  // }
+
+  const apiURL = import.meta.env.VITE_API_URL
   const userStatus = {}
 
   await axios({
@@ -77,7 +89,7 @@ router.beforeEach(async (to, from) => {
     headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
   }).then(res => {
     userStatus.loggedIn = res.data
-    console.log('Logged In status', userStatus.loggedIn)
+    console.log('Logged In status', res.data)
   }).catch((error) => {
     console.log(error)
   })

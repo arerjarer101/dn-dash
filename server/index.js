@@ -6,6 +6,7 @@ import token from './token.js'
 import user from './user.js'
 import auth from './auth.js'
 import game from './game.js'
+import character from './character.js'
 
 dotenv.config();
 const port = 7070;
@@ -25,6 +26,7 @@ app.use('/user', user)
 app.use('/auth', auth)
 app.use('/token', token)
 app.use('/game', game)
+app.use('/character', character)
 
 app.get('/', (req, res) => {
   res.send('Hello World!')

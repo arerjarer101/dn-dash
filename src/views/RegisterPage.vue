@@ -2,26 +2,22 @@
 import { useLayout } from '../layout/composables/layout.js';
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
-// import router from '../router'
 import { useRouter, useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 
 const toast = useToast();
-
 const router  = useRouter()
 const route = useRoute()
+const apiURL = import.meta.env.VITE_API_URL
 
 localStorage.previousPath = 'register'
 
 const backgroundImg = ref(getRandomImg())
-
 const { layoutConfig } = useLayout();
 const username = ref('');
 const email = ref('');
 const password = ref('');
-
-const apiURL = 'http://10.100.102.5:7070'
 
 onMounted(() => {
 	username.value = route.query.username
@@ -72,7 +68,7 @@ function onMousemove($event) {
 
 
 const logoUrl = computed(() => {
-	return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
+	return `layout/images/logo.svg`;
 });
 </script>
 

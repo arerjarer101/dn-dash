@@ -92,14 +92,18 @@ router.delete('/logoutAll', authenticateToken, async (req, res) => {
   }
 })
 
-// router.get('/user', authenticateToken, (req, res) => {
+router.get('/list', authenticateToken, async (req, res) => {
+  const userList = await prisma.user.findMany({
+    select: {
+      email: true,
+      username: true,
+      id: true,
+    },
+  })
 
-//   const user = req.user
+  res.json(userList)
+})
 
-//   console.log('get user', user)
-
-//   res.json(user)
-// })
 
 router.get('/userId', authenticateToken, (req, res) => {
 

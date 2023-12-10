@@ -1,16 +1,14 @@
 <script setup>
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, reactive, inject } from 'vue'
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
 
-const toast = useToast();
+const toast = inject('toast')
 const router  = useRouter()
 const route  = useRoute()
-const apiURL = 'http://10.100.102.5:7070'
+const apiURL = import.meta.env.VITE_API_URL
 const refreshToken = ref(localStorage.refreshToken)
 const user = ref('')
-// const accessToken = inject('token')
 const accessToken = ref(localStorage.accessToken)
 
 user.value = localStorage.user && JSON.parse(localStorage.user) 
@@ -42,7 +40,6 @@ onMounted(() => {
 async function updateUser() {
   const newdata = user.value
   // newdata.newpassword = newdata.newpassword || newdata.oldpassword
-  console.log('HEADERS:',headers)
   await axios({
     method: 'post',
     url: `${apiURL}/user/update`, 
@@ -53,7 +50,6 @@ async function updateUser() {
       severity: 'success', summary: `User ${res.data.user.username} updated`, detail: `some fields were updated`, life: 3000
     });
     localStorage.user = JSON.stringify(res.data.user)
-    console.log(res.message)
     newdata.newpassword = ''
     newdata.oldpassword = ''
   }).catch(error => {
@@ -119,9 +115,7 @@ async function onLogout() {
     url: `${apiURL}/user/logout`, 
     data: { token: localStorage.refreshToken }, 
     headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
-  }).then(res => {
-    console.log(res.data)
-
+  }).then(() => {
     localStorage.accessToken = ""
     localStorage.refreshToken = ""
     localStorage.user = ""
@@ -132,8 +126,8 @@ async function onLogout() {
         action: "logout",
       }
     })
-  }).catch(res => {
-    console.log(res.data)
+  }).catch(error => {
+    console.log(error.data)
 
     localStorage.accessToken = ""
     localStorage.refreshToken = ""
@@ -145,20 +139,6 @@ async function onLogout() {
   })
 }
 
-// watch(accessToken, (newToken) => {
-//   localStorage.accessToken = newToken
-//   headers.Authorization = `Bearer ${accessToken.value}`
-// })
-
-function onCss() {
-  let str = document.styleSheets[0].href
-  str = str.replace('http://10.100.102.5:7000/themes/', '')
-  let currentTheme = str.replace('/theme.css', '')
-  let defaultColor = getComputedStyle(document.querySelector(':root')).getPropertyValue('--text-color')
-  let activeColor = getComputedStyle(document.querySelector(':root')).getPropertyValue('--primary-color')
-  console.log(`'${currentTheme}': {\n\tdefaultColor: '${defaultColor}',\n\tactiveColor: '${activeColor}'\n},`)
-}
-// http://10.100.102.5:7000/themes/bootstrap4-dark-blue/theme.css
 </script>
 
 <template> 
@@ -241,8 +221,6 @@ function onCss() {
         </p>
     </template>
   </Card>
-
-  <Button label="CSS" class="w-full p-3 mt-5 text-xl" @click="onCss"></Button>
   
   <Button label="Logout" class="w-full p-3 mt-5 text-xl" @click="onLogout"></Button>
   <Button label="Logout Everywhere" class="w-full p-3 mt-5 text-xl" @click="onLogoutAll"></Button>
