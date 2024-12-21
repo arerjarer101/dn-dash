@@ -19,7 +19,7 @@ const intervalRefresh = setInterval(() => {
   } else {
     console.log('UNAUTHORIZED, nothing to update')
   }
-}, 10000) 
+}, 3600000) 
 
 if (!isAuthenticated) router.push('/login')
 
@@ -62,6 +62,10 @@ onMounted(() => {
 		const newColors = getThemeColors(localStorage.theme)
   	updateColors(newColors.defaultColor, newColors.activeColor)
 	}
+
+  if (isAuthenticated) {
+    updateToken()
+  }
 })
 
 onUnmounted(() => {

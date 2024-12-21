@@ -9,8 +9,12 @@ import PlayersList from './PlayersList.vue';
 import SharedInventory from './components/SharedInventory.vue';
 
 import { useGameStore } from '../stores/GameStore';
+import { useUserStore } from '../stores/UserStore';
 
 const gameStore = useGameStore();
+const userStore = useUserStore();
+
+
 
 const toast = inject('toast')
 const apiURL = import.meta.env.VITE_API_URL
@@ -24,6 +28,7 @@ const charList = computed(() => {
 })
 
 onMounted(async () => {
+  await userStore.getUsers()
   await getUsers()
   await getUpdatedGame(localStorage.currentGameId)
   if (charList.value.length) {
@@ -135,8 +140,8 @@ const data = computed(() => {
       </TabPanel>
 
       <TabPanel header="Game settings">
-        <PlayersList :currentGame="gameStore.currentGame" :users="users" @update-players="onPlayersUpdated" class=" mt-3 mb-4"></PlayersList>
-        <AddPlayer :currentGame="gameStore.currentGame" :users="users" @update-players="onPlayersUpdated" class=" mt-3 mb-4"></AddPlayer>
+        <PlayersList :currentGame="gameStore.currentGame" :users="userStore.userList" @update-players="onPlayersUpdated" class=" mt-3 mb-4"></PlayersList>
+        <AddPlayer class=" mt-3 mb-4"></AddPlayer>
         <RemovePlayer :currentGame="gameStore.currentGame" :users="users" @update-players="onPlayersUpdated" class="mb-4"></RemovePlayer>
       </TabPanel>
     </TabView>

@@ -3,7 +3,7 @@ import express from 'express'
 import jwt from 'jsonwebtoken'
 
 const router = express.Router()
-const tokenLifespan = '15s'
+const tokenLifespan = '5d'
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization']

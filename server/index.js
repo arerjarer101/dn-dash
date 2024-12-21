@@ -10,7 +10,7 @@ import character from './character.js'
 
 dotenv.config();
 const port = 7070;
-const hostname = '10.100.102.5'
+const hostname = 'localhost'
 const app = express()
 
 app.use(cors(
