@@ -1,14 +1,14 @@
 <script setup>
 import axios from 'axios';
-import { computed, inject, ref, toRaw } from 'vue';
+import { inject, ref, toRaw } from 'vue';
 import { useConfirm } from "primevue/useconfirm";
 import SkillList from './components/SkillsList.vue'
 import InventoryList from './components/InventoryList.vue'
 import EffectList from './components/EffectList.vue'
 import AbilityList from './components/AbilityList.vue'
-import { useGameStore } from '../stores/GameStore';
+// import { useGameStore } from '../stores/GameStore';
 
-const gameStore = useGameStore();
+// const gameStore = useGameStore();
 
 
 const toast = inject('toast')
@@ -60,6 +60,26 @@ const confirmDeleteCharacter = () => {
   });
 }
 
+const toggleItem = async (characterId, itemName) => {
+  await axios({
+    method: 'post',
+    url: `${apiURL}/character/toggle/item`,
+    data: { characterId, itemName },
+    headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
+  }).then(res => {
+    const updatedCharacter = res.data.updatedCharacter
+    console.log(updatedCharacter)
+    toast.add({
+      severity: 'success', summary: 'Updated', detail: `Character ${updatedCharacter.name} was updated!`, life: 3000
+    });
+  }).catch(error => {
+    console.log(error.message)
+    toast.add({
+      severity: 'error', summary: 'An error occured when updating character', detail: error.response.data.error, life: 10000
+    });
+  })
+}
+
 async function deleteCharacter() {
   const character = {
     id: props.character.id
@@ -108,6 +128,25 @@ async function updateCharacter() {
     });
   })
 }
+
+// async function showCharacter() {
+//   await axios({
+//     method: 'get',
+//     url: `${apiURL}/character/show/${props.character.id}`,
+//     headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
+//   }).then(res => {
+//     const updatedCharacter = res.data
+//     console.log(updatedCharacter)
+//     toast.add({
+//       severity: 'success', summary: 'Updated', detail: `Character ${updatedCharacter.name} was updated!`, life: 3000
+//     });
+//   }).catch(error => {
+//     console.log(error.message)
+//     toast.add({
+//       severity: 'error', summary: 'An error occured when updating the character', detail: error.response.data.error, life: 10000
+//     });
+//   })
+// }
 
 function onSkillsUpdated(updatedSkills) {
   console.log('updatedSkills', updatedSkills)
@@ -204,7 +243,7 @@ function onAbilitiesUpdated(updatedAbilities) {
           <label for="durability">Durability</label>
         </div>
       </Fieldset>
-      <InventoryList :readonly="props.readonly" @update-items="onItemsUpdated"></InventoryList>
+      <InventoryList :readonly="props.readonly" @toggle-item="async (itemName) => await toggleItem(props.character.id, itemName)" @update-items="onItemsUpdated"></InventoryList>
 
       <EffectList :readonly="props.readonly" :effects="newCharData.effects" @update-effects="onEffectsUpdated"></EffectList>
     </SplitterPanel>

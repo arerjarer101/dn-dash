@@ -53,10 +53,6 @@ const applyScale = () => {
 </script>
 
 <template>
-  
-	<button class="layout-config-button p-link" type="button" @click="onConfigButtonClick()">
-		<i class="pi pi-cog"></i>
-	</button>
 
   <Card class="p-5">
     <template #title>Edit theme settings</template>

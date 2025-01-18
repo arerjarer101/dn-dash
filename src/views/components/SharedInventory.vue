@@ -37,8 +37,8 @@ async function getCharactersWithItems() {
     headers: { 'Authorization': `Bearer ${localStorage.accessToken}` }
   }).then(res => {
     characters.value = res.data.parsedCharacters
-    console.log('res.data.parsedCharacters', res.data.parsedCharacters)
-    console.log('got characters', characters.value[0].charData)
+    // console.log('res.data.parsedCharacters', res.data.parsedCharacters)
+    // console.log('got characters', characters.value[0].charData)
   }).catch((error) => {
     console.log(error)
   })
@@ -147,14 +147,14 @@ onMounted(async () => {
       <span class="mb-5">Select the amount of items to transfer</span>
       <Divider />
       <div v-for="item, id in transferParams.items" :key="id" class="grid align-items-center pl-5 pt-3 pr-5">
-        <span class="col-9">{{ item.name }}</span>
+        <span class="col-2">{{ item.name }}</span>
         <InputNumber class="col-2" v-model="item.amount" showButtons :min="0" :max="transferParams.maxValue[id]" autofocus 
         :pt="{
           root: {style:'max-height: 4rem'},
           input: {style:'max-width: 6rem'},
         }"/>
       </div>
-      {{transferParams}}
+      <!-- {{transferParams}} -->
       
     </div>
     <template #footer>

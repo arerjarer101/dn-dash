@@ -7,7 +7,7 @@ const gameStore = useGameStore();
 const toast = inject('toast')
 
 const props = defineProps(['readonly'])
-const emit = defineEmits(['updateItems'])
+const emit = defineEmits(['updateItems', 'toggleItem'])
 
 // const items = ref(JSON.parse(JSON.stringify(props.items)))
 // const items = ref(gameStore.currentCharData.items)
@@ -18,6 +18,7 @@ const itemDialog = ref(false)
 const submittedItem = ref(false);
 const selectedItems = ref()
 const deleteItemsDialog = ref(false)
+const tableKey = ref(0)
 
 const openItemDialog = () => {
   newItem.value = { amount: 1 }
@@ -95,10 +96,16 @@ const setEquippedItemStyle = (data) => {
   return style
 }
 
+const handleToggle = (itemName) => {
+  console.log('click')
+  if (props.readonly) emit('toggleItem', itemName)
+  else emit('updateItems', gameStore.currentCharData.items)
+  tableKey.value+=1
+}
 </script>
 
 <template>
-  <Fieldset class="mt-2" legend="Items" :toggleable="true">
+  <Fieldset :key="tableKey" class="mt-2" legend="Items" :toggleable="true">
     <Toolbar v-if="!props.readonly">
       <template #start>
         <Button label="New" icon="pi pi-plus" outlined severity="success" class="mr-2" @click="openItemDialog" />
@@ -123,7 +130,7 @@ const setEquippedItemStyle = (data) => {
       <Column v-for="col, id of itemColumns" :key="id" :field="col.field" :header="col.header"
         :style="col.field === 'description' ? 'width: 70%' : col.field === 'name' ? 'width: 20%' : 'width: 5%'">
         <template #body="{ data, field }">
-          <Checkbox v-if="field === 'equipped'"  readonly v-model="data[field]" :binary="true" />
+          <Checkbox v-if="field === 'equipped'" @click="handleToggle(data.name)" v-model="data[field]" :binary="true" />
           <div v-else :style="{ 'max-width': field === 'description' ? '20rem' : '5rem', 'flex-grow': '1', 'overflow-wrap': 'break-word'}">
             {{ data[field] }}
           </div>

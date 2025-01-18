@@ -191,4 +191,64 @@ router.post('/delete', authenticateToken, async (req, res) => {
   }
 })
 
+router.get('/show/:id', authenticateToken, async (req, res) => {
+  try {
+    const character = await prisma.character.findUnique({
+      where: {
+        id: Number(req.params.id)
+      }
+    })
+
+    if (character.userId !== req.user.id) {
+      throw { message: 'Incorrect user', status: 403 }
+    }
+    console.log(character)
+
+    character.charData = JSON.parse(character.charData)
+    res.json(character)
+  } catch (error) {
+    console.log(error)
+    res.status(error.status || 500).json({ error: error.message });
+  }
+})
+
+router.post('/toggle/item', authenticateToken, async (req, res) => {
+  try {
+    const character = await prisma.character.findUnique({
+      where: {
+        id: req.body.characterId
+      }
+    })
+
+    if (character.userId !== req.user.id) {
+      throw { message: 'Incorrect user', status: 403 }
+    }
+
+    const newCharData = JSON.parse(character.charData)
+    newCharData.items.forEach(item => {
+        if (item.name === req.body.itemName)
+        item.equipped = !item.equipped
+      }
+    )
+    
+    console.log('>>>', newCharData)
+
+    const updatedCharacter = await prisma.character.update({
+      where: {
+        id: req.body.characterId
+      },
+      data: {
+        charData: JSON.stringify(newCharData)
+      }
+    })
+
+    updatedCharacter.charData = JSON.parse(updatedCharacter.charData)
+
+    res.json({ updatedCharacter })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: error.message });
+  }
+})
+
 export default router

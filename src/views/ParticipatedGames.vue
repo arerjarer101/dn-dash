@@ -1,8 +1,7 @@
 <script setup>
-import { onBeforeMount, ref, inject } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import axios from 'axios';
 
-const toast = inject('toast')
 const apiURL = import.meta.env.VITE_API_URL
 
 localStorage.currentGame = ''
@@ -53,7 +52,7 @@ onBeforeMount(() => {
       <template #title>{{game.name}}</template>
       <template #content >
         <div>
-          <RouterLink :to="`/participated-games/${game.name}`" @click="open(game)"><Button class="mr-2">Open</Button></RouterLink>
+          <RouterLink :to="`/participated-games/${game.id}`" @click="open(game)"><Button class="mr-2">Open</Button></RouterLink>
         </div>
       </template>
     </Card>

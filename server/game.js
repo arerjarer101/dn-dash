@@ -122,13 +122,43 @@ router.get('/participated', authenticateToken, async (req, res) => {
       // console.log('user.id', user.id)
       // console.log('e.characters', e.characters)
       e.characters = e.characters.filter(character => {
-        console.log('user.id', user.id)
         console.log('e.characters.character.userId', character.userId)
         return character.userId === user.id
+      })
+
+      e.characters = e.characters.map(character => {
+        character.charData = JSON.parse(character.charData)
+        return character
       })
     })
 
     res.json({ userGames })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: error.message });
+  }
+})
+
+router.get('/participated/:gameId/characters', authenticateToken, async (req, res) => {
+  try {
+    console.log(req.user.id)
+    const game = await prisma.game.findUnique({
+      where: {
+        id: Number(req.params.gameId)
+      },
+      include: {
+        characters: true
+      }
+    })
+
+    const userChars = game.characters
+
+    console.log(userChars)
+    userChars.forEach(e => {
+      e.charData = JSON.parse(e.charData)
+    })
+
+    res.json({ userChars })
   } catch (error) {
     console.log(error)
     res.status(500).json({ error: error.message });

@@ -154,7 +154,7 @@ onBeforeMount(() => {
     <Card v-for="game in games" :key="game" class="mt-2">
       <template #title>{{game.name}}</template>
       <template #content >
-        <div class="mb-5">{{game}}</div>
+        <!-- <div class="mb-5">{{game}}</div> -->
         <div>
           <RouterLink :to="`/created-games/${game.name}`" @click="open(game)"><Button class="mr-2">Open</Button></RouterLink>
           <Button @click="confirmDeleteGame(game)" label="Delete" severity="danger" class="mr-2"></Button>
