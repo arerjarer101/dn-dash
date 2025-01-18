@@ -151,9 +151,10 @@ router.get('/participated/:gameId/characters', authenticateToken, async (req, re
       }
     })
 
-    const userChars = game.characters
-
-    console.log(userChars)
+    let userChars = game.characters
+    userChars = userChars.filter(character => {
+      return character.userId === req.user.id
+    })
     userChars.forEach(e => {
       e.charData = JSON.parse(e.charData)
     })
